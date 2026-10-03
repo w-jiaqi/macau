@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="82" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- incense smoke rising from the courtyard -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M58 70 C42 62 58 50 46 40 C36 32 50 22 40 14 C36 10 40 6 44 8" stroke="#4a3a32" stroke-width="10"/>
+    <path d="M58 70 C42 62 58 50 46 40 C36 32 50 22 40 14 C36 10 40 6 44 8" stroke="#ffffff" stroke-width="5"/>
+    <path d="M70 62 C64 54 76 48 68 40 C62 34 72 28 66 22" stroke="#4a3a32" stroke-width="8"/>
+    <path d="M70 62 C64 54 76 48 68 40 C62 34 72 28 66 22" stroke="#dfe3e6" stroke-width="3.5"/>
+  </g>
+  <!-- side wall -->
+  <path d="M140 84 L150 78 L150 138 L140 144 Z" fill="#c8372d" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M140 84 L150 78 L150 138 L140 144 Z" fill="#4a3a32" opacity="0.18"/>
+  <!-- front wall -->
+  <rect x="50" y="84" width="90" height="60" fill="#e0512b" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <!-- corner pillars -->
+  <g stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <rect x="50" y="86" width="9" height="58" fill="#c8372d"/>
+    <rect x="131" y="86" width="9" height="58" fill="#c8372d"/>
+  </g>
+  <!-- bracket band under eave -->
+  <rect x="50" y="84" width="90" height="7" fill="#3f8f5a" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <g fill="#f2c14e">
+    <circle cx="62" cy="87.5" r="1.8"/><circle cx="74" cy="87.5" r="1.8"/><circle cx="86" cy="87.5" r="1.8"/>
+    <circle cx="98" cy="87.5" r="1.8"/><circle cx="110" cy="87.5" r="1.8"/><circle cx="122" cy="87.5" r="1.8"/>
+  </g>
+  <!-- plaque -->
+  <rect x="82" y="94" width="26" height="9" rx="1.5" fill="#f2c14e" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M88 98.5 H91 M94 98.5 H97 M100 98.5 H103" stroke="#c8372d" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- door frame and doors -->
+  <rect x="78" y="105" width="34" height="39" fill="#d9c7a7" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <g stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <rect x="82" y="109" width="13" height="35" fill="#c8372d"/>
+    <rect x="95" y="109" width="13" height="35" fill="#c8372d"/>
+  </g>
+  <g fill="#f2c14e">
+    <circle cx="86" cy="115" r="1.5"/><circle cx="91" cy="115" r="1.5"/><circle cx="99" cy="115" r="1.5"/><circle cx="104" cy="115" r="1.5"/>
+    <circle cx="86" cy="122" r="1.5"/><circle cx="91" cy="122" r="1.5"/><circle cx="99" cy="122" r="1.5"/><circle cx="104" cy="122" r="1.5"/>
+    <circle cx="86" cy="129" r="1.5"/><circle cx="91" cy="129" r="1.5"/><circle cx="99" cy="129" r="1.5"/><circle cx="104" cy="129" r="1.5"/>
+  </g>
+  <rect x="116" y="96" width="10" height="20" fill="#c8372d" stroke="#4a3a32" stroke-width="2.5"/>
+  <rect x="64" y="96" width="10" height="20" fill="#c8372d" stroke="#4a3a32" stroke-width="2.5"/>
+  <path d="M69 99 V113 M121 99 V113" stroke="#f2c14e" stroke-width="2" stroke-linecap="round"/>
+  <rect x="104" y="86" width="36" height="58" fill="#4a3a32" opacity="0.1"/>
+  <!-- green tiled roof with upturned eaves -->
+  <path d="M30 66 Q46 92 64 88 L126 88 Q144 92 156 66 Q142 72 132 60 L58 60 Q48 72 30 66 Z" fill="#7cc47f" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#3f8f5a" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M68 63 V85 M78 63 V86 M88 63 V86 M98 63 V86 M108 63 V86 M118 63 V85"/>
+    <path d="M58 64 Q52 76 44 80 M132 64 Q138 76 146 80"/>
+  </g>
+  <path d="M108 60 L132 60 Q142 72 156 66 Q144 92 126 88 L108 88 Z" fill="#3f8f5a" opacity="0.35"/>
+  <path d="M36 70 Q48 88 64 85 L112 85" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <!-- ridge, curled dragon tips and flaming pearl -->
+  <g stroke="#4a3a32" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="56" y="53" width="78" height="8" rx="2" fill="#3f8f5a"/>
+    <path d="M58 61 Q44 61 42 46 Q46 50 50 48 Q50 54 58 53 Z" fill="#f2c14e"/>
+    <path d="M132 61 Q146 61 148 46 Q144 50 140 48 Q140 54 132 53 Z" fill="#f2c14e"/>
+    <path d="M95 50 Q89 44 93 36 Q94 41 96 40 Q97 37 96 33 Q102 38 100 45 Q99 48 95 50 Z" fill="#ef7d57"/>
+    <circle cx="95" cy="48" r="5" fill="#f2c14e"/>
+  </g>
+  <circle cx="93.5" cy="46.5" r="1.5" fill="#ffffff"/>
+  <!-- the rock with red carved characters -->
+  <path d="M8 146 Q2 122 14 106 Q24 92 42 96 Q58 98 62 116 Q66 134 58 146 Z" fill="#d9c7a7" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M46 98 Q58 102 62 116 Q66 134 58 146 L44 146 Q54 124 46 98 Z" fill="#4a3a32" opacity="0.18"/>
+  <g stroke="#c8372d" stroke-width="2.6" stroke-linecap="round" fill="none">
+    <path d="M22 112 H32 M27 109 V121 M22 117 H32 M23 121 L31 121"/>
+    <path d="M22 127 H32 M24 127 V137 M30 127 V137 M24 132 H30 M22 137 H32"/>
+    <path d="M38 112 H46 M42 110 V124 M38 118 L46 122"/>
+  </g>
+  <path d="M14 112 Q18 102 28 100" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <!-- grass tufts -->
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M4 146 Q6 136 10 140 Q12 132 16 140 Q20 136 22 146 Z" fill="#7cc47f"/>
+    <path d="M56 146 Q58 138 62 141 Q65 134 68 146 Z" fill="#7cc47f"/>
+  </g>
+</svg>

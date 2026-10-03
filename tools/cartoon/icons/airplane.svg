@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="plane-body"><path d="M20 70 L40 64 H122 C140 64 152 72 152 80 C152 88 140 96 124 96 H48 C34 96 24 88 20 70 Z"/></clipPath>
+    <clipPath id="plane-wing"><path d="M104 90 L68 130 C66 132 62 133 58 132 L54 130 L76 90 Z"/></clipPath>
+    <clipPath id="plane-cloud"><path d="M12 138 C4 138 4 124 14 122 C14 110 30 106 38 114 C42 104 60 104 64 116 C74 114 80 124 74 132 C76 138 70 140 64 140 H14 Z"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="34" ry="6" fill="#4a3a32" opacity="0.14"/>
+  <g transform="rotate(-20 84 80)">
+    <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+      <!-- far wing + far stabiliser -->
+      <path d="M92 70 L76 40 C75 38 72 37 70 38 L63 40 L70 72 Z" fill="#dfe3e6"/>
+      <path d="M38 70 L28 57 H20 L26 72 Z" fill="#dfe3e6"/>
+      <!-- tail fin -->
+      <path d="M22 72 L26 28 H42 L58 68 Z" fill="#2f6db5"/>
+    </g>
+    <path d="M26 30 H40 L44 40 H28 Z" fill="#f2c14e" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M42 40 L58 68 H50 L36 40 Z" fill="#1f4e79" opacity="0.35"/>
+    <!-- fuselage -->
+    <path d="M20 70 L40 64 H122 C140 64 152 72 152 80 C152 88 140 96 124 96 H48 C34 96 24 88 20 70 Z" fill="#ffffff"/>
+    <g clip-path="url(#plane-body)">
+      <path d="M0 88 H160 V100 H0 Z" fill="#dfe3e6"/>
+      <path d="M0 84 H160 V88 H0 Z" fill="#2f6db5"/>
+    </g>
+    <path d="M20 70 L40 64 H122 C140 64 152 72 152 80 C152 88 140 96 124 96 H48 C34 96 24 88 20 70 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+    <!-- cockpit + windows -->
+    <path d="M132 69 C140 70 146 73 149 78 H136 Z" fill="#1f4e79" stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round"/>
+    <g fill="#2f6db5">
+      <circle cx="54" cy="76" r="3.2"/><circle cx="65" cy="76" r="3.2"/><circle cx="76" cy="76" r="3.2"/>
+      <circle cx="87" cy="76" r="3.2"/><circle cx="98" cy="76" r="3.2"/><circle cx="109" cy="76" r="3.2"/><circle cx="120" cy="76" r="3.2"/>
+    </g>
+    <!-- near stabiliser -->
+    <path d="M42 86 L28 104 C27 105 25 106 23 105 L20 104 L30 86 Z" fill="#ffffff" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+    <!-- near wing (swept back) -->
+    <path d="M104 90 L68 130 C66 132 62 133 58 132 L54 130 L76 90 Z" fill="#ffffff"/>
+    <g clip-path="url(#plane-wing)">
+      <path d="M104 90 L68 130 H74 L110 90 Z M54 124 H80 V140 H54 Z" fill="#dfe3e6"/>
+    </g>
+    <path d="M104 90 L68 130 C66 132 62 133 58 132 L54 130 L76 90 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+    <!-- engine pod -->
+    <path d="M82 100 H100 C106 100 108 103 108 106 C108 109 106 112 100 112 H82 C77 112 77 100 82 100 Z" fill="#dfe3e6" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+    <ellipse cx="105" cy="106" rx="2.6" ry="5" fill="#1f4e79" stroke="#4a3a32" stroke-width="2.5"/>
+    <path d="M84 103.5 H98" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M30 76 Q34 70 40 68" stroke="#dfe3e6" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  </g>
+  <!-- little cloud left behind -->
+  <path d="M12 138 C4 138 4 124 14 122 C14 110 30 106 38 114 C42 104 60 104 64 116 C74 114 80 124 74 132 C76 138 70 140 64 140 H14 Z" fill="#ffffff"/>
+  <g clip-path="url(#plane-cloud)">
+    <path d="M0 132 C20 136 50 136 80 128 V150 H0 Z" fill="#dfe3e6"/>
+  </g>
+  <path d="M12 138 C4 138 4 124 14 122 C14 110 30 106 38 114 C42 104 60 104 64 116 C74 114 80 124 74 132 C76 138 70 140 64 140 H14 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <!-- speed lines -->
+  <g stroke="#ffffff" stroke-width="3.5" stroke-linecap="round">
+    <path d="M84 124 L100 118"/>
+    <path d="M96 136 L108 131"/>
+  </g>
+</svg>

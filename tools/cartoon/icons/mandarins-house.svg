@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="mandarins-gate"><circle cx="76" cy="118" r="16"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- back hall roof -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M26 54 Q36 62 46 60 L114 60 Q124 62 134 54 Q122 54 114 42 L46 42 Q38 54 26 54 Z" fill="#1f4e79"/>
+    <rect x="44" y="36" width="72" height="7" rx="2" fill="#a9b1b8" stroke-width="3"/>
+    <path d="M46 43 Q36 43 34 32 Q40 38 46 36 Z" fill="#a9b1b8" stroke-width="3"/>
+    <path d="M114 43 Q124 43 126 32 Q120 38 114 36 Z" fill="#a9b1b8" stroke-width="3"/>
+  </g>
+  <!-- side wall -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round">
+    <path d="M138 86 L150 78 L150 136 L138 144 Z" fill="#dfe3e6"/>
+  </g>
+  <path d="M138 86 L150 78 L150 136 L138 144 Z" fill="#4a3a32" opacity="0.2"/>
+  <!-- front wall -->
+  <rect x="14" y="86" width="124" height="58" fill="#dfe3e6" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <!-- bricks -->
+  <g stroke="#a9b1b8" stroke-width="2" stroke-linecap="round" fill="none">
+    <path d="M17 98 H135 M17 110 H135 M17 122 H135 M17 134 H135"/>
+    <path d="M30 86 V98 M54 86 V98 M98 86 V98 M122 86 V98 M42 98 V110 M110 98 V110 M30 110 V122 M122 110 V122 M42 122 V134 M110 122 V134"/>
+  </g>
+  <!-- shade under the eave -->
+  <rect x="16" y="88" width="120" height="6" fill="#4a3a32" opacity="0.18"/>
+  <!-- stone plinth -->
+  <rect x="14" y="136" width="124" height="8" fill="#d9c7a7" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <!-- lattice windows -->
+  <g stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <rect x="20" y="102" width="14" height="16" fill="#fff6e3"/>
+    <rect x="118" y="102" width="14" height="16" fill="#fff6e3"/>
+  </g>
+  <g stroke="#a0674b" stroke-width="1.8" fill="none">
+    <path d="M24.7 104 V116 M29.3 104 V116 M22 107.3 H32 M22 112.7 H32"/>
+    <path d="M122.7 104 V116 M127.3 104 V116 M120 107.3 H130 M120 112.7 H130"/>
+  </g>
+  <!-- moon gate -->
+  <circle cx="76" cy="118" r="22" fill="#fff6e3" stroke="#4a3a32" stroke-width="4"/>
+  <circle cx="76" cy="118" r="16" fill="#9ed9c5"/>
+  <g clip-path="url(#mandarins-gate)">
+    <rect x="58" y="108" width="36" height="20" fill="#fff6e3" stroke="#4a3a32" stroke-width="2.5"/>
+    <path d="M58 108 L66 101 L86 101 L94 108 Z" fill="#1f4e79" stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="80" y="114" width="7" height="14" fill="#a0674b" stroke="#4a3a32" stroke-width="2"/>
+    <path d="M56 128 H96 V136 H56 Z" fill="#f5d9a8"/>
+    <path d="M66 136 V122" stroke="#4a3a32" stroke-width="2.5"/>
+    <circle cx="66" cy="117" r="7" fill="#7cc47f" stroke="#4a3a32" stroke-width="2.5"/>
+  </g>
+  <circle cx="76" cy="118" r="16" fill="none" stroke="#4a3a32" stroke-width="3"/>
+  <path d="M60 140 H92 L95 146 H57 Z" fill="#d9c7a7" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M62 108 A16 16 0 0 1 72 100" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <!-- front roof with upturned eaves -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M4 74 Q18 92 34 90 L118 90 Q134 92 152 74 Q136 76 128 64 L32 64 Q24 76 4 74 Z" fill="#1f4e79"/>
+  </g>
+  <g stroke="#a9b1b8" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.85">
+    <path d="M44 67 V86 M56 67 V87 M68 67 V87 M80 67 V87 M92 67 V87 M104 67 V87 M116 67 V86"/>
+    <path d="M32 68 Q28 78 22 82 M128 68 Q132 78 138 82"/>
+  </g>
+  <path d="M96 64 L128 64 Q136 76 152 74 Q134 92 118 90 L96 90 Z" fill="#4a3a32" opacity="0.2"/>
+  <path d="M8 76 Q20 90 34 88 L118 88" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <!-- ridge with curled ends -->
+  <g stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <rect x="30" y="57" width="98" height="8" rx="2" fill="#a9b1b8"/>
+    <path d="M32 65 Q18 65 16 50 Q24 58 32 57 Z" fill="#a9b1b8"/>
+    <path d="M126 65 Q140 65 142 50 Q134 58 126 57 Z" fill="#a9b1b8"/>
+  </g>
+  <path d="M36 59.5 H90" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <!-- red lanterns -->
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M46 90 V96 M106 90 V96" fill="none"/>
+    <ellipse cx="46" cy="106" rx="7.5" ry="9" fill="#c8372d"/>
+    <ellipse cx="106" cy="106" rx="7.5" ry="9" fill="#c8372d"/>
+    <rect x="42" y="95" width="8" height="3.5" fill="#f2c14e"/>
+    <rect x="42" y="113.5" width="8" height="3.5" fill="#f2c14e"/>
+    <rect x="102" y="95" width="8" height="3.5" fill="#f2c14e"/>
+    <rect x="102" y="113.5" width="8" height="3.5" fill="#f2c14e"/>
+    <path d="M46 117 V123 M106 117 V123" fill="none" stroke="#e9b44c"/>
+  </g>
+  <path d="M43 102 Q43 99 45 98.5 M103 102 Q103 99 105 98.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>

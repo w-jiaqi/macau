@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="cloud-shape"><path d="M32 116 C12 116 8 90 28 86 C26 64 52 54 66 66 C72 42 108 38 116 62 C130 52 152 62 148 84 C160 88 160 116 140 116 Z"/></clipPath>
+  </defs>
+  <path d="M32 116 C12 116 8 90 28 86 C26 64 52 54 66 66 C72 42 108 38 116 62 C130 52 152 62 148 84 C160 88 160 116 140 116 Z" fill="#ffffff"/>
+  <g clip-path="url(#cloud-shape)">
+    <path d="M0 106 C30 112 70 112 100 104 C120 98 140 100 160 96 V130 H0 Z" fill="#dfe3e6"/>
+  </g>
+  <path d="M32 116 C12 116 8 90 28 86 C26 64 52 54 66 66 C72 42 108 38 116 62 C130 52 152 62 148 84 C160 88 160 116 140 116 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#4a3a32" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.35">
+    <path d="M66 66 C68 72 72 76 76 78"/>
+    <path d="M116 62 C114 68 110 72 106 74"/>
+  </g>
+</svg>

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="panda-body"><ellipse cx="80" cy="114" rx="40" ry="32"/></clipPath>
+    <clipPath id="panda-head"><ellipse cx="80" cy="50" rx="35" ry="31"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="46" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- body -->
+    <ellipse cx="80" cy="114" rx="40" ry="32" fill="#ffffff"/>
+  </g>
+  <g clip-path="url(#panda-body)">
+    <ellipse cx="116" cy="118" rx="22" ry="40" fill="#dfe3e6"/>
+  </g>
+  <ellipse cx="80" cy="114" rx="40" ry="32" fill="none" stroke="#4a3a32" stroke-width="4"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- feet with pink pads -->
+    <ellipse cx="50" cy="134" rx="18" ry="13" fill="#4a3a32" transform="rotate(-15 50 134)"/>
+    <ellipse cx="110" cy="134" rx="18" ry="13" fill="#4a3a32" transform="rotate(15 110 134)"/>
+  </g>
+  <g fill="#f4a7b9">
+    <ellipse cx="50" cy="136" rx="7.5" ry="5.5" transform="rotate(-15 50 136)"/>
+    <ellipse cx="110" cy="136" rx="7.5" ry="5.5" transform="rotate(15 110 136)"/>
+    <circle cx="40" cy="129" r="2.6"/><circle cx="45" cy="125.5" r="2.6"/><circle cx="51" cy="124" r="2.6"/>
+    <circle cx="120" cy="129" r="2.6"/><circle cx="115" cy="125.5" r="2.6"/><circle cx="109" cy="124" r="2.6"/>
+  </g>
+  <!-- ears -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round">
+    <circle cx="52" cy="25" r="12" fill="#4a3a32"/>
+    <circle cx="108" cy="25" r="12" fill="#4a3a32"/>
+  </g>
+  <circle cx="52" cy="26" r="5" fill="#a9b1b8" opacity="0.6"/>
+  <circle cx="108" cy="26" r="5" fill="#a9b1b8" opacity="0.6"/>
+  <!-- head -->
+  <ellipse cx="80" cy="50" rx="35" ry="31" fill="#ffffff"/>
+  <g clip-path="url(#panda-head)">
+    <ellipse cx="114" cy="56" rx="16" ry="36" fill="#dfe3e6"/>
+  </g>
+  <ellipse cx="80" cy="50" rx="35" ry="31" fill="none" stroke="#4a3a32" stroke-width="4"/>
+  <!-- eye patches + eyes -->
+  <g fill="#4a3a32">
+    <ellipse cx="65" cy="49" rx="9.5" ry="12.5" transform="rotate(32 65 49)"/>
+    <ellipse cx="95" cy="49" rx="9.5" ry="12.5" transform="rotate(-32 95 49)"/>
+  </g>
+  <circle cx="67" cy="46.5" r="4.6" fill="#ffffff"/>
+  <circle cx="93" cy="46.5" r="4.6" fill="#ffffff"/>
+  <circle cx="67.6" cy="47.2" r="2.7" fill="#4a3a32"/>
+  <circle cx="92.4" cy="47.2" r="2.7" fill="#4a3a32"/>
+  <circle cx="66.6" cy="45.8" r="1.1" fill="#ffffff"/>
+  <circle cx="91.4" cy="45.8" r="1.1" fill="#ffffff"/>
+  <!-- blush -->
+  <ellipse cx="57" cy="64" rx="5.5" ry="3.2" fill="#f4a7b9"/>
+  <ellipse cx="103" cy="64" rx="5.5" ry="3.2" fill="#f4a7b9"/>
+  <!-- nose + mouth -->
+  <path d="M75 60 Q80 57.5 85 60 Q83 65 80 65.5 Q77 65 75 60 Z" fill="#4a3a32" stroke="#4a3a32" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M80 65.5 V68.5 M72.5 68 Q76 73 80 68.5 Q84 73 87.5 68" stroke="#4a3a32" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- bamboo stalk -->
+  <g transform="rotate(-6 80 79)">
+    <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="22" y="73" width="116" height="12" rx="5" fill="#7cc47f"/>
+    </g>
+    <rect x="24" y="80" width="112" height="3.5" fill="#3f8f5a" opacity="0.6"/>
+    <g stroke="#3f8f5a" stroke-width="3" stroke-linecap="round">
+      <path d="M44 75 V83"/><path d="M68 75 V83"/><path d="M92 75 V83"/><path d="M116 75 V83"/>
+    </g>
+    <path d="M28 76.5 H40" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+    <!-- leaves at the end -->
+    <g stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round">
+      <path d="M133 76 C132 60 138 48 148 41 C151 55 144 69 133 76 Z" fill="#7cc47f"/>
+      <path d="M135 78 C142 70 150 69 156 74 C151 82 143 83 135 78 Z" fill="#3f8f5a"/>
+      <path d="M131 74 C124 62 124 48 128 38 C136 48 138 62 131 74 Z" fill="#9ed9c5"/>
+    </g>
+  </g>
+  <!-- arms + paws gripping the bamboo -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="#4a3a32">
+    <path d="M40 112 C32 100 34 86 44 78 C52 72 64 76 62 86 C60 94 56 102 56 114 Z"/>
+    <path d="M120 112 C128 100 126 86 116 76 C108 70 96 74 98 84 C100 92 104 100 104 114 Z"/>
+  </g>
+  <path d="M46 82 Q50 78 55 79" stroke="#a9b1b8" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <path d="M104 79 Q109 76 114 79" stroke="#a9b1b8" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+</svg>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- green hill -->
+  <path d="M8 146 C12 124 40 110 80 110 C120 110 148 124 152 146 Z" fill="#7cc47f"/>
+  <path d="M96 111 C126 114 148 126 152 146 H112 C116 132 110 118 96 111 Z" fill="#3f8f5a" opacity="0.55"/>
+  <path d="M8 146 C12 124 40 110 80 110 C120 110 148 124 152 146 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <!-- bushes -->
+  <g stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round">
+    <circle cx="20" cy="132" r="9" fill="#3f8f5a"/>
+    <circle cx="140" cy="132" r="9" fill="#3f8f5a"/>
+    <circle cx="30" cy="136" r="7" fill="#7cc47f"/>
+  </g>
+  <!-- flag -->
+  <path d="M80 70 V14" stroke="#4a3a32" stroke-width="4" stroke-linecap="round"/>
+  <path d="M82 15 Q92 11 101 16 T119 17 V32 Q110 28 101 31 T82 30 Z" fill="#e0512b" stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M82 24 Q92 20 101 25 T119 26" fill="none" stroke="#f2c14e" stroke-width="3"/>
+  <circle cx="80" cy="12" r="3.5" fill="#f2c14e" stroke="#4a3a32" stroke-width="2.5"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- terrace top -->
+    <path d="M28 74 L80 60 L132 74 L80 88 Z" fill="#d9c7a7"/>
+    <!-- left wall (light) -->
+    <path d="M80 140 L22 124 L28 74 L80 88 Z" fill="#dfe3e6"/>
+    <!-- right wall (shaded) -->
+    <path d="M80 140 L138 124 L132 74 L80 88 Z" fill="#a9b1b8"/>
+  </g>
+  <!-- stone joints -->
+  <g stroke="#a9b1b8" stroke-width="2.5" stroke-linecap="round">
+    <path d="M64 100 L74 103 M56 112 L68 115.5 M30 114 L42 117.5 M58 90 L68 93 M62 124 L74 127.5 M40 126 L50 129"/>
+  </g>
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linecap="round" opacity="0.28">
+    <path d="M90 104 L102 100.5 M112 96 L124 92.5 M96 122 L108 118.5 M118 112 L130 108.5 M104 88 L114 85"/>
+  </g>
+  <!-- arched gate -->
+  <path d="M96 133 V120 A7 7 0 0 1 110 116 V129 Z" fill="#4a3a32"/>
+  <!-- merlons -->
+  <g stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round">
+    <path d="M28 74 L38 76.7 L38 66.7 L28 64 Z" fill="#dfe3e6"/>
+    <path d="M44 78.3 L54 81 L54 71 L44 68.3 Z" fill="#dfe3e6"/>
+    <path d="M72 85.8 L80 88 L88 85.8 L88 75.8 L80 78 L72 75.8 Z" fill="#dfe3e6"/>
+    <path d="M80 88 L88 85.8 L88 75.8 L80 78 Z" fill="#a9b1b8"/>
+    <path d="M106 81 L116 78.3 L116 68.3 L106 71 Z" fill="#a9b1b8"/>
+    <path d="M122 76.7 L132 74 L132 64 L122 66.7 Z" fill="#a9b1b8"/>
+    <path d="M90 85.3 L98 83.1 L98 73.1 L90 75.3 Z" fill="#a9b1b8"/>
+  </g>
+  <!-- black cannon poking out of a gun port -->
+  <ellipse cx="54" cy="103" rx="8" ry="9" fill="#4a3a32"/>
+  <g transform="rotate(-27 57 103)">
+    <rect x="27" y="96" width="32" height="14" rx="6" fill="#4a3a32" stroke="#4a3a32" stroke-width="2"/>
+    <rect x="34" y="95" width="5" height="16" rx="2" fill="#4a3a32" stroke="#a9b1b8" stroke-width="1.8"/>
+    <path d="M42 99 H56" stroke="#a9b1b8" stroke-width="2.6" stroke-linecap="round"/>
+    <ellipse cx="27" cy="103" rx="4.6" ry="8.4" fill="#a9b1b8" stroke="#4a3a32" stroke-width="3"/>
+    <ellipse cx="26.6" cy="103" rx="2" ry="4.2" fill="#4a3a32"/>
+  </g>
+  <!-- highlights -->
+  <g stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.95">
+    <path d="M27 82 L25.5 98"/>
+    <path d="M31 68 L31 72"/>
+    <path d="M47 72.5 L47 76.5"/>
+    <path d="M75 79 L75 83"/>
+  </g>
+</svg>

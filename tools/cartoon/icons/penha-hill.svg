@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- green hill -->
+  <path d="M4 148 C8 118 36 100 80 100 C124 100 152 118 156 148 Z" fill="#7cc47f" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M104 102 C130 106 152 122 156 148 L122 148 C124 128 118 112 104 102 Z" fill="#3f8f5a" opacity="0.45"/>
+  <path d="M16 128 C22 116 34 108 48 105" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <!-- winding path -->
+  <path d="M64 148 C78 138 52 128 66 118 C72 113 74 110 74 106" stroke="#4a3a32" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M64 148 C78 138 52 128 66 118 C72 113 74 110 74 106" stroke="#f5d9a8" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <!-- church: nave roof and side wall -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M100 72 L132 64 L132 100 L100 108 Z" fill="#dfe3e6"/>
+    <path d="M74 50 L106 42 L134 64 L100 72 Z" fill="#ef7d57"/>
+  </g>
+  <path d="M74 50 L106 42 L134 64 L100 72 Z" fill="#4a3a32" opacity="0.15"/>
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M108 90 V82 A3.5 3.5 0 0 1 115 82 V88 Z" fill="#2f6db5"/>
+    <path d="M120 87 V79 A3.5 3.5 0 0 1 127 79 V85 Z" fill="#2f6db5"/>
+  </g>
+  <!-- facade -->
+  <path d="M46 72 L74 48 L102 72 L102 108 L46 108 Z" fill="#ffffff" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M51 94 V84 A3.5 3.5 0 0 1 58 84 V94 Z" fill="#2f6db5"/>
+    <path d="M90 94 V84 A3.5 3.5 0 0 1 97 84 V94 Z" fill="#2f6db5"/>
+  </g>
+  <!-- bell tower -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M85 32 L91 28 L91 104 L85 108 Z" fill="#dfe3e6"/>
+    <rect x="63" y="32" width="22" height="76" fill="#ffffff"/>
+    <path d="M60 32 L74 14 L92 30 Z" fill="#ef7d57"/>
+    <path d="M60 32 L74 14 L88 32 Z" fill="#ef7d57"/>
+  </g>
+  <path d="M74 14 L92 30 L88 32 Z" fill="#4a3a32" opacity="0.2"/>
+  <rect x="61" y="31" width="27" height="5" fill="#ffffff" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <!-- belfry, bell, clock, door -->
+  <path d="M68 54 V45 A6 6 0 0 1 80 45 V54 Z" fill="#1f4e79" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M71 52 Q71 46 74 46 Q77 46 77 52 Z" fill="#f2c14e" stroke="#4a3a32" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="74" cy="66" r="4.5" fill="#8fd3f4" stroke="#4a3a32" stroke-width="2.5"/>
+  <path d="M67 108 V92 A7 7 0 0 1 81 92 V108 Z" fill="#a0674b" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <!-- cross -->
+  <path d="M74 14 V3.5 M69 8 H79" stroke="#4a3a32" stroke-width="6" stroke-linecap="round"/>
+  <path d="M74 14 V3.5 M69 8 H79" stroke="#f2c14e" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- trees -->
+  <g stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <path d="M24 134 V142" fill="none"/>
+    <circle cx="24" cy="126" r="10" fill="#3f8f5a"/>
+    <path d="M38 124 V132" fill="none"/>
+    <circle cx="38" cy="116" r="8" fill="#7cc47f"/>
+    <path d="M136 134 V142" fill="none"/>
+    <circle cx="136" cy="125" r="11" fill="#3f8f5a"/>
+    <path d="M118 118 V126" fill="none"/>
+    <circle cx="118" cy="111" r="7.5" fill="#7cc47f"/>
+  </g>
+  <g fill="#ffffff" opacity="0.6">
+    <circle cx="20" cy="122" r="2.5"/><circle cx="35" cy="113" r="2"/><circle cx="131" cy="120" r="2.5"/><circle cx="115" cy="108" r="2"/>
+  </g>
+</svg>

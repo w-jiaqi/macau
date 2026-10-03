@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+<ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+<g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="54" cy="54" r="15" fill="#3f8f5a"/>
+<circle cx="48.8" cy="48.8" r="5.2" fill="#7cc47f" stroke="none"/>
+<circle cx="101" cy="50" r="16" fill="#3f8f5a"/>
+<circle cx="95.4" cy="44.4" r="5.6" fill="#7cc47f" stroke="none"/>
+<circle cx="150" cy="66" r="12" fill="#3f8f5a"/>
+<circle cx="145.8" cy="61.8" r="4.2" fill="#7cc47f" stroke="none"/>
+<circle cx="10" cy="66" r="11" fill="#3f8f5a"/>
+<circle cx="6.2" cy="62.1" r="3.8" fill="#7cc47f" stroke="none"/>
+<polygon points="48,66 54,60 54,116 48,122" fill="#9ed9c5"/>
+<polygon points="48,66 54,60 54,116 48,122" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<rect x="12" y="66" width="36" height="56" fill="#9ed9c5"/>
+<rect x="13.5" y="66" width="4" height="55" fill="#ffffff" stroke="none"/>
+<rect x="42.5" y="66" width="4" height="55" fill="#ffffff" stroke="none"/>
+<rect x="12" y="91" width="36" height="4" fill="#ffffff" stroke-width="2.5"/>
+<rect x="10" y="64" width="40" height="6" rx="1.5" fill="#ffffff" stroke-width="3"/>
+<path d="M20 88 V77 Q22 74 24 74 Q26 74 26 77 V88 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M28 88 V77 Q30 74 32 74 Q34 74 34 77 V88 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M36 88 V77 Q38 74 40 74 Q42 74 42 77 V88 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M25 122 V106 Q25 100 30 100 Q35 100 35 106 V122 Z" fill="#3f8f5a" stroke-width="3"/>
+<rect x="18" y="102" width="5" height="11" fill="#3f8f5a" stroke-width="2.5"/>
+<rect x="37" y="102" width="5" height="11" fill="#3f8f5a" stroke-width="2.5"/>
+<rect x="40" y="70" width="6" height="51" fill="#4a3a32" fill-opacity="0.17" stroke="none"/>
+<polygon points="46,48 51,45 57,59 51,65" fill="#c8372d"/>
+<polygon points="46,48 51,45 57,59 51,65" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<polygon points="8,65 20,48 46,48 51,65" fill="#c8372d"/>
+<line x1="15" y1="59" x2="47" y2="59" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+<line x1="19" y1="53" x2="45" y2="53" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+<polygon points="95,64 101,58 101,116 95,122" fill="#9ed9c5"/>
+<polygon points="95,64 101,58 101,116 95,122" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<rect x="59" y="64" width="36" height="58" fill="#9ed9c5"/>
+<rect x="60.5" y="64" width="4" height="57" fill="#ffffff" stroke="none"/>
+<rect x="89.5" y="64" width="4" height="57" fill="#ffffff" stroke="none"/>
+<rect x="59" y="89" width="36" height="4" fill="#ffffff" stroke-width="2.5"/>
+<rect x="57" y="62" width="40" height="6" rx="1.5" fill="#ffffff" stroke-width="3"/>
+<path d="M67 86 V75 Q69 72 71 72 Q73 72 73 75 V86 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M75 86 V75 Q77 72 79 72 Q81 72 81 75 V86 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M83 86 V75 Q85 72 87 72 Q89 72 89 75 V86 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M72 122 V104 Q72 98 77 98 Q82 98 82 104 V122 Z" fill="#3f8f5a" stroke-width="3"/>
+<rect x="65" y="100" width="5" height="11" fill="#3f8f5a" stroke-width="2.5"/>
+<rect x="84" y="100" width="5" height="11" fill="#3f8f5a" stroke-width="2.5"/>
+<rect x="87" y="68" width="6" height="53" fill="#4a3a32" fill-opacity="0.17" stroke="none"/>
+<polygon points="93,46 98,43 104,57 98,63" fill="#c8372d"/>
+<polygon points="93,46 98,43 104,57 98,63" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<polygon points="55,63 67,46 93,46 98,63" fill="#c8372d"/>
+<line x1="62" y1="57" x2="94" y2="57" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+<line x1="66" y1="51" x2="92" y2="51" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+<polygon points="142,66 148,60 148,116 142,122" fill="#9ed9c5"/>
+<polygon points="142,66 148,60 148,116 142,122" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<rect x="106" y="66" width="36" height="56" fill="#9ed9c5"/>
+<rect x="107.5" y="66" width="4" height="55" fill="#ffffff" stroke="none"/>
+<rect x="136.5" y="66" width="4" height="55" fill="#ffffff" stroke="none"/>
+<rect x="106" y="91" width="36" height="4" fill="#ffffff" stroke-width="2.5"/>
+<rect x="104" y="64" width="40" height="6" rx="1.5" fill="#ffffff" stroke-width="3"/>
+<path d="M114 88 V77 Q116 74 118 74 Q120 74 120 77 V88 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M122 88 V77 Q124 74 126 74 Q128 74 128 77 V88 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M130 88 V77 Q132 74 134 74 Q136 74 136 77 V88 Z" fill="#3f8f5a" stroke-width="2.5"/>
+<path d="M119 122 V106 Q119 100 124 100 Q129 100 129 106 V122 Z" fill="#3f8f5a" stroke-width="3"/>
+<rect x="112" y="102" width="5" height="11" fill="#3f8f5a" stroke-width="2.5"/>
+<rect x="131" y="102" width="5" height="11" fill="#3f8f5a" stroke-width="2.5"/>
+<rect x="134" y="70" width="6" height="51" fill="#4a3a32" fill-opacity="0.17" stroke="none"/>
+<polygon points="140,48 145,45 151,59 145,65" fill="#c8372d"/>
+<polygon points="140,48 145,45 151,59 145,65" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<polygon points="102,65 114,48 140,48 145,65" fill="#c8372d"/>
+<line x1="109" y1="59" x2="141" y2="59" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+<line x1="113" y1="53" x2="139" y2="53" stroke="#ffffff" stroke-opacity="0.45" stroke-width="2"/>
+<path d="M6 122 H154 V128 H6 Z" fill="#d9c7a7"/>
+<path d="M8 128 H152 Q154 146 132 147 H28 Q6 146 8 128 Z" fill="#8fd3f4"/>
+<path d="M24 136 q4 -3 8 0 q4 3 8 0 M104 140 q4 -3 8 0 q4 3 8 0" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+<path d="M56 138 L62.3 134.6 A9 4.5 0 1 1 64.5 138.9 Z" fill="#7cc47f" stroke-width="2.5"/>
+<path d="M78 142 L82.9 139.3 A7 3.5 0 1 1 84.7 142.7 Z" fill="#7cc47f" stroke-width="2.5"/>
+<path d="M130 134 L135.6 131.0 A8 4.0 0 1 1 137.6 134.8 Z" fill="#7cc47f" stroke-width="2.5"/>
+<path d="M20 141 L24.2 138.7 A6 3.0 0 1 1 25.7 141.6 Z" fill="#7cc47f" stroke-width="2.5"/>
+<path d="M58 137 Q52 131 53 125 Q59 127 62 133 Z" fill="#f4a7b9" stroke-width="2.5"/>
+<path d="M72 137 Q78 131 77 125 Q71 127 68 133 Z" fill="#f4a7b9" stroke-width="2.5"/>
+<path d="M58 137 Q58 127 65 120 Q72 127 72 137 Z" fill="#f4a7b9" stroke-width="2.5"/>
+<path d="M62 129 Q64 125 65 124" fill="none" stroke="#ffffff" stroke-width="2"/>
+</g>
+</svg>

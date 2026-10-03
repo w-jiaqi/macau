@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="80" cy="148" rx="50" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- checkered flag -->
+  <path d="M26 128 V9" stroke="#4a3a32" stroke-width="5" stroke-linecap="round"/>
+  <path d="M26 128 V10" stroke="#a9b1b8" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M26 12 L28.5 11 L31 10 L33.5 9.2 L36 8.5 L38.5 7.9 L41 7.6 L43.5 7.5 L46 7.6 L48.5 7.9 L51 8.5 L53.5 9.2 L56 10 L58.5 11 L61 12 L63.5 13 L66 14 L68.5 14.8 L71 15.5 L73.5 16.1 L76 16.4 L78.5 16.5 L81 16.4 L83.5 16.1 L86 15.5 L86 51.5 L83.5 52.1 L81 52.4 L78.5 52.5 L76 52.4 L73.5 52.1 L71 51.5 L68.5 50.8 L66 50 L63.5 49 L61 48 L58.5 47 L56 46 L53.5 45.2 L51 44.5 L48.5 43.9 L46 43.6 L43.5 43.5 L41 43.6 L38.5 43.9 L36 44.5 L33.5 45.2 L31 46 L28.5 47 L26 48 Z" fill="#ffffff" stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M26 12 L36 8.5 L36 17.5 L26 21 Z M26 30 L36 26.5 L36 35.5 L26 39 Z M36 17.5 L46 16.6 L46 25.6 L36 26.5 Z M36 35.5 L46 34.6 L46 43.6 L36 44.5 Z M46 7.6 L56 10 L56 19 L46 16.6 Z M46 25.6 L56 28 L56 37 L46 34.6 Z M56 19 L66 23 L66 32 L56 28 Z M56 37 L66 41 L66 50 L56 46 Z M66 14 L76 16.4 L76 25.4 L66 23 Z M66 32 L76 34.4 L76 43.4 L66 41 Z M76 25.4 L86 24.5 L86 33.5 L76 34.4 Z M76 43.4 L86 42.5 L86 51.5 L76 52.4 Z" fill="#4a3a32"/>
+  <path d="M26 12 L28.5 11 L31 10 L33.5 9.2 L36 8.5 L38.5 7.9 L41 7.6 L43.5 7.5 L46 7.6 L48.5 7.9 L51 8.5 L53.5 9.2 L56 10 L58.5 11 L61 12 L63.5 13 L66 14 L68.5 14.8 L71 15.5 L73.5 16.1 L76 16.4 L78.5 16.5 L81 16.4 L83.5 16.1 L86 15.5 L86 51.5 L83.5 52.1 L81 52.4 L78.5 52.5 L76 52.4 L73.5 52.1 L71 51.5 L68.5 50.8 L66 50 L63.5 49 L61 48 L58.5 47 L56 46 L53.5 45.2 L51 44.5 L48.5 43.9 L46 43.6 L43.5 43.5 L41 43.6 L38.5 43.9 L36 44.5 L33.5 45.2 L31 46 L28.5 47 L26 48 Z" fill="none" stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round"/>
+  <circle cx="26" cy="7" r="4" fill="#f2c14e" stroke="#4a3a32" stroke-width="2.6"/>
+  <!-- far-side wheels -->
+  <g stroke="#4a3a32" stroke-width="4">
+    <circle cx="124" cy="123" r="16" fill="#4a3a32"/>
+    <circle cx="47" cy="128" r="12" fill="#4a3a32"/>
+  </g>
+  <!-- rear wing -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M138 108 V92" />
+    <rect x="120" y="83" width="33" height="10" rx="3" fill="#c8372d"/>
+    <rect x="145" y="78" width="9" height="30" rx="2.5" fill="#4a3a32"/>
+  </g>
+  <path d="M126 86 H146" stroke="#f2c14e" stroke-width="2.4" stroke-linecap="round"/>
+  <!-- body -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M8 131 Q8 126 14 125 L58 114 L68 112 L94 109 L99 96 Q100 93 104 93 L111 93 Q114 93 116 96 L141 112 L143 126 L24 136 Q9 136 8 131 Z" fill="#c8372d"/>
+  </g>
+  <path d="M24 132 L142 122 L143 126 L24 136 Q14 136 10 133 Z" fill="#4a3a32" opacity="0.2"/>
+  <!-- sidepod -->
+  <path d="M70 131 L74 120 Q76 116 82 116 L118 115 L126 128 Z" fill="#e0512b" stroke="#4a3a32" stroke-width="3.2" stroke-linejoin="round"/>
+  <!-- stripe + roundel -->
+  <path d="M14 127.5 L60 117" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M103 97 L112 97" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="100" cy="123" r="7" fill="#ffffff" stroke="#4a3a32" stroke-width="2.4"/>
+  <path d="M100 118.4 L101.2 121.4 L104.4 121.6 L101.9 123.6 L102.7 126.7 L100 125 L97.3 126.7 L98.1 123.6 L95.6 121.6 L98.8 121.4 Z" fill="#f2c14e" stroke="#4a3a32" stroke-width="1.2" stroke-linejoin="round"/>
+  <!-- driver helmet -->
+  <g stroke="#4a3a32" stroke-width="3.2" stroke-linejoin="round">
+    <circle cx="83" cy="103" r="9.5" fill="#f2c14e"/>
+    <path d="M73.6 101 H84 Q86 101 86 103.5 V106 Q86 108 84 108 H75 Z" fill="#1f4e79"/>
+  </g>
+  <path d="M84 96 Q89 96 91 100" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <!-- front wing -->
+  <g stroke="#4a3a32" stroke-width="3.6" stroke-linejoin="round">
+    <rect x="5" y="136" width="33" height="7" rx="2.5" fill="#c8372d"/>
+    <rect x="4" y="130" width="7" height="14" rx="2" fill="#4a3a32"/>
+  </g>
+  <!-- near-side wheels -->
+  <g stroke="#4a3a32" stroke-width="4">
+    <circle cx="116" cy="128" r="18" fill="#4a3a32"/>
+    <circle cx="40" cy="132" r="14" fill="#4a3a32"/>
+  </g>
+  <g stroke="#4a3a32" stroke-width="2.4">
+    <circle cx="116" cy="128" r="8.5" fill="#dfe3e6"/>
+    <circle cx="40" cy="132" r="6.5" fill="#dfe3e6"/>
+    <circle cx="116" cy="128" r="3" fill="#f2c14e"/>
+    <circle cx="40" cy="132" r="2.4" fill="#f2c14e"/>
+  </g>
+  <g fill="none" stroke="#a9b1b8" stroke-width="2.4" stroke-linecap="round">
+    <path d="M104 118 A14 14 0 0 1 116 113"/>
+    <path d="M31 123 A11 11 0 0 1 40 120"/>
+  </g>
+</svg>

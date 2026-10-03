@@ -1,0 +1,56 @@
+{
+  "title": "澳门一日游",
+  "stops": [
+    {
+      "name": "保利美高梅博物馆",
+      "lat": 22.186104,
+      "lng": 113.547588
+    },
+    "grand-lisboa",
+    {
+      "name": "加思栏花园",
+      "lat": 22.192488,
+      "lng": 113.544641
+    },
+    {
+      "name": "东望洋新街",
+      "lat": 22.194185,
+      "lng": 113.545598
+    },
+    "st-lazarus",
+    "mount-fortress",
+    "ruins-st-paul",
+    "senado-square",
+    "a-ma-temple",
+    "macau-tower",
+    "venetian",
+    "londoner"
+  ],
+  "legs": {
+    "outer-harbour>22.18610,113.54759": {
+      "mode": "drive",
+      "d": 2959,
+      "g": "gonfCiobtTb@bC\\fBBNF|DJdB?F?F?HAFAFCFCFCFeBzCYv@WVEHEJCL?N@LBLDJFJHH`Ap@jAj@DBn@b@@@XTFBLHDDHFDBNJDBVPJJLTTd@R\\|@`BBFBBXPr@f@LJt@f@d@^VZJJP^d@z@Vd@R\\?@FHDDPVBFj@dADFHNXj@BBFHFHHFHFHFB@DBb@Ov@WhAa@RGLEXKd@KFCpIuCb@QTIPGHCnAc@d@OzAi@LEVITIj@SXKPE|@[JEBALETGdBm@VIPGX`AX`AJb@hAbEb@|AXp@JP@DBDPZV`@RZj@r@`CnCFDRT\\`@NNj@p@FNBH@D?D?BCFGDA?CACAAAAA]e@QUIKCCAC@C@C?A@CACKMC?E?C@G@aGvB"
+    },
+    "22.18610,113.54759>grand-lisboa": {
+      "mode": "walk",
+      "d": 1207,
+      "g": "}clfC{c`tT??`GwBFABAD?B?JL@BAB?@ABAB@BBBHJPT\\d@@@@@B@B@@?FERZIBaNrEu@VgGtBiBl@@FFPJTNXHJGHOPMbAAAO?K?OBKDKDKJIJEJIEaAUKDc@P_@L_@XMDYNGMIFGB?@@@@@@B?BgA@AC"
+    },
+    "grand-lisboa>22.19249,113.54464": {
+      "mode": "walk",
+      "d": 362,
+      "g": "aamfCim_tT?KCOESAAEKGMMMGGOIKEICEAC?KDE@M?WCG?eBD?KU??MM?AAACAEACCECCACCAECCACCEAC?EAC?E?E?C?E@C@E@C@GQI@A?C?EAA?A?AAAAAAAA?A?AAC@A?A?A@A@A@A@A@?@AH@CIJC@A@A?A?C?AACCCMD"
+    },
+    "22.19249,113.54464>22.19419,113.54560": {
+      "mode": "walk",
+      "d": 274,
+      "g": "cnmfCcu_tTLEBBHGFEc@QEG@C@A?AAA?AAA?AAAAAA?A?A?A?A?S[EEC@GFEDMFMBOBM?MCMC}@_@m@YMGg@]YS"
+    },
+    "22.19419,113.54560>st-lazarus": {
+      "mode": "walk",
+      "d": 493,
+      "g": "uxmfC_{_tT[UYl@Q\\CDS`@EFS^Yj@UMs@c@UOa@UYQUO?BKKUOMRMRMRMVQVa@t@[f@}AgAOV"
+    }
+  }
+}

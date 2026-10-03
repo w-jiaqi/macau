@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="ama-hill"><path d="M6 146 C18 126 48 116 80 116 C112 116 142 126 154 146 Q80 154 6 146 Z"/></clipPath>
+    <clipPath id="ama-robe"><path d="M67 54 C63 76 58 96 54 114 Q80 119 106 114 C102 96 97 76 93 54 Z"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- golden halo -->
+  <circle cx="80" cy="36" r="23" fill="#f2c14e" opacity="0.5"/>
+  <circle cx="80" cy="36" r="23" fill="none" stroke="#e9b44c" stroke-width="2.5" stroke-dasharray="3 5" stroke-linecap="round"/>
+  <!-- green hill -->
+  <path d="M6 146 C18 126 48 116 80 116 C112 116 142 126 154 146 Q80 154 6 146 Z" fill="#7cc47f" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <g clip-path="url(#ama-hill)">
+    <path d="M110 118 C134 122 148 132 156 148 H104 C120 138 122 128 110 118 Z" fill="#3f8f5a" opacity="0.55"/>
+  </g>
+  <path d="M26 132 Q36 124 48 121" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <!-- bushes -->
+  <g stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round">
+    <path d="M16 143 C12 134 20 127 28 131 C32 124 44 127 42 136 C46 141 38 147 28 146 C22 147 16 147 16 143 Z" fill="#3f8f5a"/>
+    <path d="M120 142 C118 133 128 127 134 133 C140 127 150 133 146 142 C142 147 126 147 120 142 Z" fill="#3f8f5a"/>
+  </g>
+  <circle cx="26" cy="134" r="3" fill="#9ed9c5" opacity="0.8"/>
+  <circle cx="131" cy="135" r="3" fill="#9ed9c5" opacity="0.8"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- stone pedestal -->
+    <path d="M50 132 V122 H110 V132 Q80 136 50 132 Z" fill="#d9c7a7"/>
+    <path d="M58 122 V112 H102 V122 Z" fill="#fff6e3"/>
+  </g>
+  <path d="M96 124 H108 V131 Q102 132.5 96 133 Z" fill="#4a3a32" opacity="0.12"/>
+  <path d="M90 114 H100 V120 H90 Z" fill="#4a3a32" opacity="0.08"/>
+  <!-- long veil of hair behind -->
+  <path d="M64 42 C62 52 64 60 68 66 H92 C96 60 98 52 96 42 Z" fill="#dfe3e6" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <!-- robe -->
+  <path d="M67 54 C63 76 58 96 54 114 Q80 119 106 114 C102 96 97 76 93 54 Z" fill="#ffffff"/>
+  <g clip-path="url(#ama-robe)">
+    <path d="M86 50 H110 V120 H92 C96 96 92 76 86 50 Z" fill="#dfe3e6"/>
+    <path d="M70 96 Q68 106 66 116 M80 98 V118 M90 96 Q92 106 94 116" stroke="#a9b1b8" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  </g>
+  <path d="M67 54 C63 76 58 96 54 114 Q80 119 106 114 C102 96 97 76 93 54 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- long sleeves -->
+    <path d="M68 56 C58 66 56 84 60 102 C66 100 72 94 77 86 L80 70 Z" fill="#ffffff"/>
+    <path d="M92 56 C102 66 104 84 100 102 C94 100 88 94 83 86 L80 70 Z" fill="#dfe3e6"/>
+    <!-- jade tablet held at the chest -->
+    <rect x="75" y="56" width="10" height="28" rx="4" fill="#9ed9c5"/>
+    <!-- hands -->
+    <ellipse cx="80" cy="78" rx="7.5" ry="5" fill="#fff6e3"/>
+  </g>
+  <!-- gold sash -->
+  <path d="M70 90 Q80 94 90 90" stroke="#e9b44c" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- head -->
+  <ellipse cx="80" cy="40" rx="12" ry="12.5" fill="#fff6e3" stroke="#4a3a32" stroke-width="4"/>
+  <path d="M68.5 36 C70 30 74 28 80 28 C86 28 90 30 91.5 36 C86 33 74 33 68.5 36 Z" fill="#dfe3e6" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <!-- face -->
+  <path d="M73.5 40.5 Q75.5 42.5 77.5 40.5 M82.5 40.5 Q84.5 42.5 86.5 40.5" stroke="#4a3a32" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M77.5 46 Q80 48 82.5 46" stroke="#4a3a32" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <circle cx="72.5" cy="44.5" r="2.4" fill="#f4a7b9"/>
+  <circle cx="87.5" cy="44.5" r="2.4" fill="#f4a7b9"/>
+  <!-- golden phoenix crown -->
+  <path d="M66 30 L63 17 Q68 20 71 16 Q75 19 80 7 Q85 19 89 16 Q92 20 97 17 L94 30 Q80 26 66 30 Z" fill="#f2c14e" stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M86 21 L89 18 L93 21 L93.5 28 Q90 27.3 87 27 Z" fill="#e9b44c"/>
+  <circle cx="80" cy="22" r="3" fill="#c8372d" stroke="#4a3a32" stroke-width="2"/>
+  <circle cx="71" cy="24" r="1.8" fill="#2f6db5"/>
+  <circle cx="89" cy="24" r="1.8" fill="#2f6db5"/>
+  <path d="M75 15 L78 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <!-- bead tassels -->
+  <g stroke="#4a3a32" stroke-width="1.6" stroke-linecap="round">
+    <path d="M65 29 V40 M95 29 V40"/>
+  </g>
+  <g fill="#c8372d" stroke="#4a3a32" stroke-width="1.2">
+    <circle cx="65" cy="35" r="2"/><circle cx="65" cy="41" r="2.3"/>
+    <circle cx="95" cy="35" r="2"/><circle cx="95" cy="41" r="2.3"/>
+  </g>
+  <!-- highlight on robe -->
+</svg>

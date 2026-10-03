@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- smoke puffs -->
+  <g fill="#ffffff" stroke="#4a3a32" stroke-width="3">
+    <circle cx="80" cy="12" r="6"/>
+    <circle cx="70" cy="20" r="7.5"/>
+    <circle cx="58" cy="25" r="8"/>
+  </g>
+  <!-- volcano -->
+  <path d="M8 128 C22 102 36 68 46 42 Q62 30 78 42 C90 68 102 102 116 128 Z" fill="#a0674b" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M66 36 Q74 36 78 42 C90 68 102 102 116 128 L88 128 C86 96 78 62 66 36 Z" fill="#4a3a32" opacity="0.2"/>
+  <ellipse cx="62" cy="40" rx="14" ry="4.5" fill="#c8372d" stroke="#4a3a32" stroke-width="3"/>
+  <path d="M49 42 Q52 52 48 62 Q53 64 55 54 Q58 48 60 56 Q62 66 67 60 Q66 50 75 42 Q62 47 49 42 Z" fill="#ef7d57" stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M40 64 Q32 86 22 108" stroke="#f5d9a8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M46 84 Q42 94 38 104" stroke="#f5d9a8" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- colourful houses -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round">
+    <rect x="94" y="76" width="24" height="70" fill="#f4a7b9"/>
+    <path d="M90 78 L106 58 L122 78 Z" fill="#ef7d57"/>
+  </g>
+  <path d="M106 58 L122 78 L112 78 Z" fill="#4a3a32" opacity="0.18"/>
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round">
+    <rect x="99" y="84" width="6" height="8" fill="#ffffff"/>
+    <rect x="108" y="84" width="6" height="8" fill="#ffffff"/>
+    <rect x="99" y="100" width="6" height="8" fill="#ffffff"/>
+    <rect x="108" y="100" width="6" height="8" fill="#ffffff"/>
+  </g>
+  <path d="M106 58 V46" stroke="#4a3a32" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M106 46 L116 49 L106 53 Z" fill="#f2c14e" stroke="#4a3a32" stroke-width="2.2" stroke-linejoin="round"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round">
+    <path d="M140 96 L148 90 L148 140 L140 146 Z" fill="#8fd3f4"/>
+    <rect x="114" y="96" width="26" height="50" fill="#8fd3f4"/>
+    <path d="M110 98 L127 80 L144 98 Z" fill="#c8372d"/>
+    <path d="M127 80 L144 98 L150 92 L134 76 Z" fill="#c8372d"/>
+  </g>
+  <path d="M140 96 L148 90 L148 140 L140 146 Z" fill="#4a3a32" opacity="0.2"/>
+  <path d="M127 80 L144 98 L150 92 L134 76 Z" fill="#4a3a32" opacity="0.2"/>
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round">
+    <rect x="119" y="104" width="7" height="8" fill="#ffffff"/>
+    <rect x="129" y="104" width="7" height="8" fill="#ffffff"/>
+    <path d="M122 146 V132 A5 5 0 0 1 132 132 V146 Z" fill="#a0674b"/>
+  </g>
+  <!-- colosseum arcade wall -->
+  <path d="M4 98 Q48 112 92 98 L92 134 Q48 148 4 134 Z" fill="#f5d9a8" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M4 116 Q48 130 92 116" stroke="#4a3a32" stroke-width="2.5" fill="none"/>
+  <path d="M6 101 Q48 114 90 101" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <g fill="#a0674b" stroke="#4a3a32" stroke-width="2.4" stroke-linejoin="round">
+    <path d="M10 113 V108 A4 4 0 0 1 18 108 V113 Z"/>
+    <path d="M24 115.6 V110.6 A4 4 0 0 1 32 110.6 V115.6 Z"/>
+    <path d="M38 117 V112 A4 4 0 0 1 46 112 V117 Z"/>
+    <path d="M52 117 V112 A4 4 0 0 1 60 112 V117 Z"/>
+    <path d="M66 115.6 V110.6 A4 4 0 0 1 74 110.6 V115.6 Z"/>
+    <path d="M80 113 V108 A4 4 0 0 1 88 108 V113 Z"/>
+    <path d="M9.5 136.5 V126 A4.5 4.5 0 0 1 18.5 126 V136.5 Z"/>
+    <path d="M23.5 139.5 V129 A4.5 4.5 0 0 1 32.5 129 V139.5 Z"/>
+    <path d="M37.5 141 V130.5 A4.5 4.5 0 0 1 46.5 130.5 V141 Z"/>
+    <path d="M51.5 141 V130.5 A4.5 4.5 0 0 1 60.5 130.5 V141 Z"/>
+    <path d="M65.5 139.5 V129 A4.5 4.5 0 0 1 74.5 129 V139.5 Z"/>
+    <path d="M79.5 136.5 V126 A4.5 4.5 0 0 1 88.5 126 V136.5 Z"/>
+  </g>
+  <path d="M74 106 Q86 104 92 98 L92 134 Q84 140 74 141 Z" fill="#4a3a32" opacity="0.12"/>
+</svg>

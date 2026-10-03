@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+<ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+<g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<polygon points="146,84 152,79 152,122 146,126" fill="#f4a7b9"/>
+<polygon points="146,84 152,79 152,122 146,126" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<rect x="84" y="84" width="62" height="42" fill="#f4a7b9"/>
+<rect x="86" y="78" width="5" height="6" fill="#fff6e3" stroke-width="2.5"/>
+<rect x="94.6" y="78" width="5" height="6" fill="#fff6e3" stroke-width="2.5"/>
+<rect x="103.2" y="78" width="5" height="6" fill="#fff6e3" stroke-width="2.5"/>
+<rect x="111.8" y="78" width="5" height="6" fill="#fff6e3" stroke-width="2.5"/>
+<rect x="120.4" y="78" width="5" height="6" fill="#fff6e3" stroke-width="2.5"/>
+<rect x="129" y="78" width="5" height="6" fill="#fff6e3" stroke-width="2.5"/>
+<rect x="137.6" y="78" width="5" height="6" fill="#fff6e3" stroke-width="2.5"/>
+<rect x="84" y="104" width="62" height="22" fill="#fff6e3"/>
+<path d="M89 126 V114 Q89 108 92.5 108 Q96 108 96 114 V126 Z" fill="#1f4e79" stroke-width="2.5"/>
+<path d="M100.4 126 V114 Q100.4 108 103.9 108 Q107.4 108 107.4 114 V126 Z" fill="#1f4e79" stroke-width="2.5"/>
+<path d="M111.8 126 V114 Q111.8 108 115.3 108 Q118.8 108 118.8 114 V126 Z" fill="#1f4e79" stroke-width="2.5"/>
+<path d="M123.2 126 V114 Q123.2 108 126.7 108 Q130.2 108 130.2 114 V126 Z" fill="#1f4e79" stroke-width="2.5"/>
+<path d="M134.6 126 V114 Q134.6 108 138.1 108 Q141.6 108 141.6 114 V126 Z" fill="#1f4e79" stroke-width="2.5"/>
+<path d="M92 99 V92 Q95 87 98 92 V99 Z" fill="#ffffff" stroke-width="2.5"/>
+<path d="M105.5 99 V92 Q108.5 87 111.5 92 V99 Z" fill="#ffffff" stroke-width="2.5"/>
+<path d="M119 99 V92 Q122 87 125 92 V99 Z" fill="#ffffff" stroke-width="2.5"/>
+<path d="M132.5 99 V92 Q135.5 87 138.5 92 V99 Z" fill="#ffffff" stroke-width="2.5"/>
+<rect x="138" y="86" width="6" height="38" fill="#4a3a32" fill-opacity="0.17" stroke="none"/>
+<polygon points="74,58 81,53 81,123 74,128" fill="#c8372d"/>
+<polygon points="74,58 81,53 81,123 74,128" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<rect x="46" y="58" width="28" height="70" fill="#c8372d"/>
+<rect x="53" y="64" width="14" height="56" fill="#4a3a32" fill-opacity="0.17" stroke="none"/>
+<line x1="49" y1="72" x2="52" y2="72" stroke="#ffffff" stroke-opacity="0.55" stroke-width="2"/>
+<line x1="49" y1="86" x2="52" y2="86" stroke="#ffffff" stroke-opacity="0.55" stroke-width="2"/>
+<line x1="49" y1="100" x2="52" y2="100" stroke="#ffffff" stroke-opacity="0.55" stroke-width="2"/>
+<line x1="49" y1="112" x2="52" y2="112" stroke="#ffffff" stroke-opacity="0.55" stroke-width="2"/>
+<polygon points="76,36 83,31 83,53 76,58" fill="#fff6e3"/>
+<polygon points="76,36 83,31 83,53 76,58" fill="#4a3a32" fill-opacity="0.28" stroke="none"/>
+<rect x="44" y="36" width="32" height="22" fill="#fff6e3"/>
+<path d="M48 54 V44 Q51 39 54 44 V54 Z" fill="#1f4e79" stroke-width="2.5"/>
+<path d="M57 54 V44 Q60 39 63 44 V54 Z" fill="#1f4e79" stroke-width="2.5"/>
+<path d="M66 54 V44 Q69 39 72 44 V54 Z" fill="#1f4e79" stroke-width="2.5"/>
+<rect x="42" y="56" width="36" height="5" rx="1" fill="#fff6e3" stroke-width="3"/>
+<rect x="46" y="27" width="28" height="9" fill="#c8372d"/>
+<rect x="43" y="33" width="34" height="5" rx="1" fill="#fff6e3" stroke-width="3"/>
+<polygon points="74,28 62,4 82,23" fill="#3f8f5a"/>
+<polygon points="45,28 62,4 74,28" fill="#7cc47f"/>
+<circle cx="62" cy="5" r="3.5" fill="#f2c14e" stroke-width="2.5"/>
+<rect x="20" y="96" width="8" height="44" rx="3" fill="#ffffff"/>
+<path d="M20 106 L28 100 V105 L20 111 Z" fill="#c8372d" stroke="none"/>
+<path d="M20 116 L28 110 V115 L20 121 Z" fill="#c8372d" stroke="none"/>
+<path d="M20 126 L28 120 V125 L20 131 Z" fill="#c8372d" stroke="none"/>
+<path d="M20 136 L28 130 V135 L20 141 Z" fill="#c8372d" stroke="none"/>
+<rect x="20" y="96" width="8" height="44" rx="3" fill="none"/>
+<circle cx="24" cy="94" r="5" fill="#f2c14e" stroke-width="3"/>
+<path d="M8 124 H152 Q156 146 134 147 H26 Q4 146 8 124 Z" fill="#8fd3f4"/>
+<path d="M6 122 H154 V126 H6 Z" fill="#d9c7a7" stroke-width="3"/>
+<path d="M12 141 q4 -3 8 0 q4 3 8 0 M130 140 q4 -3 8 0 q4 3 8 0" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+<path d="M30 126 Q36 141 58 141 H112 Q130 141 136 120 L140 112 Q134 132 112 134 H58 Q40 134 30 126 Z" fill="#1f4e79"/>
+<path d="M60 135 H110" fill="none" stroke="#f2c14e" stroke-width="2.5"/>
+<path d="M136 120 L144 110 L144 104 L140 104 L140 112" fill="#dfe3e6" stroke-width="3"/>
+<line x1="140" y1="110" x2="146" y2="110" stroke-width="2.5"/>
+<line x1="140" y1="115" x2="146" y2="115" stroke-width="2.5"/>
+<rect x="80" y="126" width="18" height="8" rx="3" fill="#c8372d" stroke-width="3"/>
+<line x1="56" y1="102" x2="72" y2="142" stroke="#a0674b" stroke-width="3"/>
+<rect x="38" y="108" width="12" height="18" rx="4" fill="#ffffff" stroke-width="3"/>
+<rect x="39.5" y="112" width="9" height="3" fill="#c8372d" stroke="none"/>
+<rect x="39.5" y="118" width="9" height="3" fill="#c8372d" stroke="none"/>
+<circle cx="44" cy="102" r="5" fill="#f5d9a8" stroke-width="3"/>
+<ellipse cx="44" cy="98" rx="8" ry="2.5" fill="#f2c14e" stroke-width="2.5"/>
+<rect x="40" y="94" width="8" height="4" fill="#f2c14e" stroke-width="2.5"/>
+<line x1="49" y1="113" x2="56" y2="108" stroke-width="3"/>
+</g>
+</svg>

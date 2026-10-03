@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="80" cy="148" rx="46" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- lotus-petal glass crown (outer petals first) -->
+  <g stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round">
+    <path transform="rotate(-58 80 68) translate(80 68) scale(0.8) translate(-80 -68)" d="M80 68 C62 54 64 24 80 6 C96 24 98 54 80 68 Z" fill="#e9b44c"/>
+    <path transform="rotate(58 80 68) translate(80 68) scale(0.8) translate(-80 -68)" d="M80 68 C62 54 64 24 80 6 C96 24 98 54 80 68 Z" fill="#e9b44c"/>
+    <path transform="rotate(-32 80 68) translate(80 68) scale(0.84) translate(-80 -68)" d="M80 68 C62 54 64 24 80 6 C96 24 98 54 80 68 Z" fill="#f2c14e"/>
+    <path transform="rotate(-32 80 68) translate(80 68) scale(0.84) translate(-80 -68)" d="M80 60 C70 50 71 30 80 16 C89 30 90 50 80 60 Z" fill="#fff6e3" stroke-width="2.5" opacity="0.9"/>
+    <path transform="rotate(32 80 68) translate(80 68) scale(0.84) translate(-80 -68)" d="M80 68 C62 54 64 24 80 6 C96 24 98 54 80 68 Z" fill="#f2c14e"/>
+    <path transform="rotate(32 80 68) translate(80 68) scale(0.84) translate(-80 -68)" d="M80 60 C70 50 71 30 80 16 C89 30 90 50 80 60 Z" fill="#fff6e3" stroke-width="2.5" opacity="0.9"/>
+    <path d="M80 68 C62 54 64 24 80 6 C96 24 98 54 80 68 Z" fill="#f2c14e"/>
+    <path d="M80 60 C70 50 71 30 80 16 C89 30 90 50 80 60 Z" fill="#fff6e3" stroke-width="2.5" opacity="0.9"/>
+  </g>
+  <!-- tower flaring up like a torch -->
+  <path d="M69 118 C68 98 63 78 50 56 Q80 68 110 56 C97 78 92 98 91 118 Z" fill="#f2c14e" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M84 62.5 Q98 61 110 56 C97 78 92 98 91 118 L82 118 C86 98 86 78 84 62.5 Z" fill="#4a3a32" opacity="0.14"/>
+  <g stroke="#e9b44c" stroke-width="2.2" stroke-linecap="round" fill="none">
+    <path d="M61 62 Q69 86 74 116 M71 65.5 Q76 88 78 116 M89 65.5 Q84 88 82 116 M99 62 Q91 86 86 116"/>
+  </g>
+  <path d="M56 63 Q64 78 68 100" stroke="#fff6e3" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- glowing golden egg base -->
+  <path d="M20 146 C20 122 46 110 80 110 C114 110 140 122 140 146 Z" fill="#f2c14e" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M98 111.5 C122 116 140 128 140 146 L108 146 C112 132 108 120 98 111.5 Z" fill="#4a3a32" opacity="0.13"/>
+  <g stroke="#e9b44c" stroke-width="2.4" stroke-linecap="round" fill="none">
+    <path d="M28 128 Q80 117 132 128"/>
+    <path d="M21 140 Q80 129 139 140"/>
+    <path d="M40 125 V137 M56 122.2 V134 M72 121.2 V132.5 M88 121.2 V132.5 M104 122.2 V134 M120 125 V137"/>
+  </g>
+  <path d="M32 126 Q42 115 62 111.5" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <circle cx="70" cy="111" r="1.8" fill="#ffffff"/>
+  <!-- sparkles -->
+  <g fill="#ffffff" stroke="#4a3a32" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M20 86 Q20 92 26 92 Q20 92 20 98 Q20 92 14 92 Q20 92 20 86 Z"/>
+    <path d="M141 82 Q141 88 147 88 Q141 88 141 94 Q141 88 135 88 Q141 88 141 82 Z"/>
+    <path d="M132 14 Q132 19 137 19 Q132 19 132 24 Q132 19 127 19 Q132 19 132 14 Z"/>
+  </g>
+</svg>

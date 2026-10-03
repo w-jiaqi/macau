@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="cv-shell"><path d="M10 112 C12 124 17 133 22 140 Q44 150 66 140 C71 133 76 124 78 112 Z"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- chapel: side roof + side wall (3/4 view) -->
+    <path d="M108 62 C112 70 120 80 132 82 L146 74 C136 72 128 63 122 54 Z" fill="#ef7d57"/>
+    <path d="M132 82 L146 74 V136 L132 142 Z" fill="#e9b44c"/>
+    <!-- chapel facade -->
+    <path d="M64 142 V82 C76 80 84 70 88 62 H108 C112 70 120 80 132 82 V142 Z" fill="#f2c14e"/>
+  </g>
+  <path d="M120 80 C124 81 128 82 132 82 V142 H120 Z" fill="#4a3a32" opacity="0.10"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- white trims -->
+    <rect x="64" y="84" width="68" height="7" fill="#ffffff"/>
+    <rect x="64" y="91" width="8" height="51" fill="#ffffff"/>
+    <rect x="124" y="91" width="8" height="51" fill="#ffffff"/>
+    <!-- door + rose window -->
+    <path d="M88 142 V123 A10 10 0 0 1 108 123 V142 Z" fill="#a0674b"/>
+    <circle cx="98" cy="105" r="7.5" fill="#8fd3f4"/>
+    <!-- side window -->
+    <path d="M136 112 V100 Q139 95 142 97 V109 Z" fill="#2f6db5" stroke-width="3"/>
+    <!-- bell tower -->
+    <path d="M108 38 L114 35 V61 L108 64 Z" fill="#e9b44c"/>
+    <rect x="88" y="38" width="20" height="26" fill="#f2c14e"/>
+    <path d="M93 59 V49 A5 5 0 0 1 103 49 V59 Z" fill="#1f4e79" stroke-width="3"/>
+    <rect x="85" y="33" width="26" height="6" fill="#ffffff"/>
+    <path d="M88 33 Q98 16 108 33 Z" fill="#ef7d57"/>
+    <path d="M98 19 V6 M93 11 H103" fill="none" stroke-width="4"/>
+  </g>
+  <path d="M98 142 V125" stroke="#4a3a32" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M93.5 104 Q94 100 97.5 99" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M95.5 53.5 Q98 49 100.5 53.5 L101.5 56 H94.5 Z" fill="#f2c14e"/>
+  <path d="M92 30 Q94 25 97 23" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.85"/>
+  <!-- giant Portuguese egg tart -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M10 112 C12 124 17 133 22 140 Q44 150 66 140 C71 133 76 124 78 112 Z" fill="#e9b44c"/>
+  </g>
+  <g clip-path="url(#cv-shell)">
+    <path d="M58 110 H82 V150 H52 C60 140 62 126 58 110 Z" fill="#a0674b" opacity="0.35"/>
+    <g stroke="#a0674b" stroke-width="3" stroke-linecap="round" fill="none">
+      <path d="M18 119 L26 141"/>
+      <path d="M30 123 L34 144"/>
+      <path d="M44 124 V145"/>
+      <path d="M58 123 L54 144"/>
+      <path d="M70 119 L62 141"/>
+    </g>
+  </g>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M10 112 C12 124 17 133 22 140 Q44 150 66 140 C71 133 76 124 78 112" fill="none"/>
+    <ellipse cx="44" cy="112" rx="34" ry="12.5" fill="#f5d9a8"/>
+    <ellipse cx="44" cy="112.5" rx="26" ry="8.5" fill="#f2c14e" stroke-width="3"/>
+  </g>
+  <g fill="#a0674b">
+    <ellipse cx="34" cy="110" rx="5.5" ry="2.6"/>
+    <ellipse cx="51" cy="114.5" rx="6.5" ry="3"/>
+    <ellipse cx="57" cy="108.5" rx="3.5" ry="1.8"/>
+    <ellipse cx="40" cy="116" rx="3" ry="1.5"/>
+    <ellipse cx="27" cy="114" rx="2.2" ry="1.3"/>
+    <ellipse cx="46" cy="107.5" rx="2.4" ry="1.2"/>
+  </g>
+  <ellipse cx="51" cy="114.5" rx="3" ry="1.4" fill="#4a3a32" opacity="0.45"/>
+  <ellipse cx="38" cy="106.5" rx="5" ry="1.4" fill="#ffffff" opacity="0.85"/>
+  <path d="M20 104 Q24 101 30 100.5" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- sparkle -->
+  <path d="M18 80 Q19 87 26 88 Q19 89 18 96 Q17 89 10 88 Q17 87 18 80 Z" fill="#ffffff" stroke="#4a3a32" stroke-width="2.5" stroke-linejoin="round"/>
+</svg>

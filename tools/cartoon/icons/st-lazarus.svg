@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- white church spire behind -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="84" y="26" width="22" height="40" fill="#ffffff"/>
+    <path d="M81 27 L95 7 L109 27 Z" fill="#ffffff"/>
+  </g>
+  <rect x="99" y="28" width="5" height="34" fill="#dfe3e6"/>
+  <path d="M95 10 L106 25 H100 Z" fill="#dfe3e6"/>
+  <path d="M90 46 V39 A5 5 0 0 1 100 39 V46 Z" fill="#a0674b" stroke="#4a3a32" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M95 7 V0.5 M91.5 3.5 H98.5" stroke="#4a3a32" stroke-width="3" stroke-linecap="round"/>
+  <!-- houses stepping up the slope -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round">
+    <path d="M12 143.7 V76 H57 V137.9 Z" fill="#ef7d57"/>
+    <path d="M56 138 V62 H103 V132 Z" fill="#f2c14e"/>
+    <path d="M102 132.2 V50 H148 V126.3 Z" fill="#9ed9c5"/>
+  </g>
+  <!-- side shading -->
+  <g fill="#4a3a32" opacity="0.13">
+    <path d="M48 80 H55 V138 L48 139 Z"/>
+    <path d="M94 66 H101 V132.5 L94 133.5 Z"/>
+    <path d="M139 54 H146 V126.5 L139 127.4 Z"/>
+  </g>
+  <!-- white cornices / parapets -->
+  <g fill="#ffffff" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <rect x="9" y="71" width="51" height="7" rx="1.5"/>
+    <path d="M53 62 V57 H70 Q79.5 46 89 57 H106 V62 Z"/>
+    <rect x="99" y="45" width="52" height="7" rx="1.5"/>
+  </g>
+  <circle cx="79.5" cy="55.5" r="2.4" fill="#ef7d57" stroke="#4a3a32" stroke-width="1.6"/>
+  <!-- windows: white frames with shutters -->
+  <g stroke="#4a3a32" stroke-width="2.4" stroke-linejoin="round">
+    <g fill="#ffffff">
+      <rect x="18" y="86" width="13" height="18" rx="1"/>
+      <rect x="37" y="86" width="13" height="18" rx="1"/>
+      <rect x="62" y="72" width="13" height="18" rx="1"/>
+      <rect x="83" y="72" width="13" height="18" rx="1"/>
+      <rect x="108" y="60" width="13" height="18" rx="1"/>
+      <rect x="128" y="60" width="13" height="18" rx="1"/>
+      <rect x="108" y="88" width="13" height="16" rx="1"/>
+      <rect x="62" y="100" width="13" height="16" rx="1"/>
+    </g>
+    <g stroke-width="1.6">
+      <path d="M20.5 88.5 h4 v13 h-4 Z M24.5 88.5 h4 v13 h-4 Z" fill="#3f8f5a"/>
+      <path d="M39.5 88.5 h4 v13 h-4 Z M43.5 88.5 h4 v13 h-4 Z" fill="#3f8f5a"/>
+      <path d="M64.5 74.5 h4 v13 h-4 Z M68.5 74.5 h4 v13 h-4 Z" fill="#3f8f5a"/>
+      <path d="M85.5 74.5 h4 v13 h-4 Z M89.5 74.5 h4 v13 h-4 Z" fill="#3f8f5a"/>
+      <path d="M110.5 62.5 h4 v13 h-4 Z M114.5 62.5 h4 v13 h-4 Z" fill="#2f6db5"/>
+      <path d="M130.5 62.5 h4 v13 h-4 Z M134.5 62.5 h4 v13 h-4 Z" fill="#2f6db5"/>
+      <path d="M110.5 90.5 h4 v11 h-4 Z M114.5 90.5 h4 v11 h-4 Z" fill="#2f6db5"/>
+      <path d="M64.5 102.5 h4 v11 h-4 Z M68.5 102.5 h4 v11 h-4 Z" fill="#3f8f5a"/>
+    </g>
+  </g>
+  <!-- doors -->
+  <g fill="#a0674b" stroke="#4a3a32" stroke-width="2.6" stroke-linejoin="round">
+    <path d="M24 142.2 V120 A7 7 0 0 1 38 120 V140.4 Z"/>
+    <path d="M83 134.6 V114 A7 7 0 0 1 97 114 V132.8 Z"/>
+    <path d="M128 128.6 V110 A7 7 0 0 1 142 110 V126.8 Z"/>
+  </g>
+  <!-- cobbled sloping lane -->
+  <path d="M5 145 L155 125.5 V136 L5 152 Z" fill="#d9c7a7" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <g fill="#f5d9a8">
+    <ellipse cx="22" cy="146" rx="4" ry="2"/>
+    <ellipse cx="44" cy="141.5" rx="4" ry="2"/>
+    <ellipse cx="34" cy="148" rx="3.5" ry="1.8"/>
+    <ellipse cx="66" cy="141" rx="4" ry="2"/>
+    <ellipse cx="88" cy="136" rx="4" ry="2"/>
+    <ellipse cx="78" cy="142" rx="3.5" ry="1.8"/>
+    <ellipse cx="110" cy="134.5" rx="4" ry="2"/>
+    <ellipse cx="132" cy="129.5" rx="4" ry="2"/>
+    <ellipse cx="124" cy="136" rx="3.5" ry="1.8"/>
+    <ellipse cx="144" cy="133" rx="3.5" ry="1.8"/>
+  </g>
+  <path d="M14 80 V104" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "name": "澳门一日游 · 路线地图",
+  "short_name": "澳门一日游",
+  "description": "从澳门外港客运码头出发，游览精选景点，到氹仔客运码头结束的一日游路线地图。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f3ece0",
+  "theme_color": "#1f4e79",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

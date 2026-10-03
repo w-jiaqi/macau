@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="tap-seac-plaza"><path d="M30 105 H130 L152 139 H8 Z"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <g transform="translate(0 -4)">
+  <!-- tree between the buildings -->
+  <g stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round">
+    <rect x="77" y="80" width="6" height="28" fill="#a0674b"/>
+    <circle cx="80" cy="76" r="13" fill="#7cc47f"/>
+  </g>
+  <path d="M85 69 a9 9 0 0 1 3.5 10" fill="none" stroke="#3f8f5a" stroke-width="3" stroke-linecap="round"/>
+  <!-- two pink-and-white colonial buildings -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round">
+    <rect x="18" y="56" width="52" height="52" fill="#f4a7b9"/>
+    <rect x="90" y="56" width="52" height="52" fill="#f4a7b9"/>
+  </g>
+  <g fill="#4a3a32" opacity="0.12">
+    <rect x="61" y="58" width="7" height="48"/>
+    <rect x="133" y="58" width="7" height="48"/>
+  </g>
+  <!-- white quoins -->
+  <g fill="#ffffff">
+    <rect x="20" y="58" width="3.5" height="48"/>
+    <rect x="92" y="58" width="3.5" height="48"/>
+  </g>
+  <!-- white cornices + pediments + floor band -->
+  <g fill="#ffffff" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <path d="M30 52 L44 40 L58 52 Z"/>
+    <path d="M102 52 Q116 36 130 52 Z"/>
+    <rect x="14" y="51" width="60" height="7" rx="1.5"/>
+    <rect x="86" y="51" width="60" height="7" rx="1.5"/>
+    <rect x="18" y="80" width="52" height="5"/>
+    <rect x="90" y="80" width="52" height="5"/>
+  </g>
+  <circle cx="44" cy="47.5" r="2.4" fill="#f4a7b9" stroke="#4a3a32" stroke-width="1.6"/>
+  <circle cx="116" cy="46.5" r="2.4" fill="#f4a7b9" stroke="#4a3a32" stroke-width="1.6"/>
+  <!-- arched windows (upper) -->
+  <g fill="#ffffff" stroke="#4a3a32" stroke-width="2.4" stroke-linejoin="round">
+    <path d="M25 77 V67 A5.5 5.5 0 0 1 36 67 V77 Z"/>
+    <path d="M38.5 77 V67 A5.5 5.5 0 0 1 49.5 67 V77 Z"/>
+    <path d="M52 77 V67 A5.5 5.5 0 0 1 63 67 V77 Z"/>
+    <path d="M97 77 V67 A5.5 5.5 0 0 1 108 67 V77 Z"/>
+    <path d="M110.5 77 V67 A5.5 5.5 0 0 1 121.5 67 V77 Z"/>
+    <path d="M124 77 V67 A5.5 5.5 0 0 1 135 67 V77 Z"/>
+  </g>
+  <g fill="#1f4e79">
+    <path d="M27.5 75 V67.5 A3 3 0 0 1 33.5 67.5 V75 Z"/>
+    <path d="M41 75 V67.5 A3 3 0 0 1 47 67.5 V75 Z"/>
+    <path d="M54.5 75 V67.5 A3 3 0 0 1 60.5 67.5 V75 Z"/>
+    <path d="M99.5 75 V67.5 A3 3 0 0 1 105.5 67.5 V75 Z"/>
+    <path d="M113 75 V67.5 A3 3 0 0 1 119 67.5 V75 Z"/>
+    <path d="M126.5 75 V67.5 A3 3 0 0 1 132.5 67.5 V75 Z"/>
+  </g>
+  <!-- ground floor arcades -->
+  <g fill="#ffffff" stroke="#4a3a32" stroke-width="2.4" stroke-linejoin="round">
+    <path d="M24 108 V96 A6.5 6.5 0 0 1 37 96 V108 Z"/>
+    <path d="M37.5 108 V96 A6.5 6.5 0 0 1 50.5 96 V108 Z"/>
+    <path d="M51 108 V96 A6.5 6.5 0 0 1 64 96 V108 Z"/>
+    <path d="M96 108 V96 A6.5 6.5 0 0 1 109 96 V108 Z"/>
+    <path d="M109.5 108 V96 A6.5 6.5 0 0 1 122.5 96 V108 Z"/>
+    <path d="M123 108 V96 A6.5 6.5 0 0 1 136 96 V108 Z"/>
+  </g>
+  <g fill="#a0674b">
+    <path d="M27 108 V96.5 A3.5 3.5 0 0 1 34 96.5 V108 Z"/>
+    <path d="M40.5 108 V96.5 A3.5 3.5 0 0 1 47.5 96.5 V108 Z"/>
+    <path d="M54 108 V96.5 A3.5 3.5 0 0 1 61 96.5 V108 Z"/>
+    <path d="M99 108 V96.5 A3.5 3.5 0 0 1 106 96.5 V108 Z"/>
+    <path d="M112.5 108 V96.5 A3.5 3.5 0 0 1 119.5 96.5 V108 Z"/>
+    <path d="M126 108 V96.5 A3.5 3.5 0 0 1 133 96.5 V108 Z"/>
+  </g>
+  </g>
+  <!-- plaza with wavy pavement -->
+  <path d="M30 110 H130 L152 144 H8 Z" fill="#d9c7a7" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M30 105 H130 L152 139 H8 Z" fill="#fff6e3"/>
+  <g clip-path="url(#tap-seac-plaza)" fill="none" stroke="#4a3a32" stroke-width="3" stroke-linecap="round">
+    <path d="M0 114 q10 -7 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0"/>
+    <path d="M-10 125 q10 -7 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0"/>
+    <path d="M0 136 q10 -7 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0"/>
+  </g>
+  <path d="M30 105 H130 L152 139 H8 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <!-- two lamp posts -->
+  <g stroke="#4a3a32" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M14 137 V90 M146 137 V90" stroke-width="8"/>
+    <path d="M14 137 V90 M146 137 V90" stroke="#1f4e79" stroke-width="3.5"/>
+    <path d="M8 141 h12 l-2 -7 h-8 Z M140 141 h12 l-2 -7 h-8 Z" fill="#1f4e79" stroke-width="3"/>
+    <rect x="11" y="110" width="6" height="4" rx="1.5" fill="#f2c14e" stroke-width="2"/>
+    <rect x="143" y="110" width="6" height="4" rx="1.5" fill="#f2c14e" stroke-width="2"/>
+    <path d="M6 80 L14 72 L22 80 Z M138 80 L146 72 L154 80 Z" fill="#1f4e79" stroke-width="3"/>
+    <path d="M8 80 H20 L18.5 92 H9.5 Z M140 80 H152 L150.5 92 H141.5 Z" fill="#f2c14e" stroke-width="3"/>
+    <circle cx="14" cy="69.5" r="2.4" fill="#f2c14e" stroke-width="2"/>
+    <circle cx="146" cy="69.5" r="2.4" fill="#f2c14e" stroke-width="2"/>
+  </g>
+  <path d="M11.5 82.5 V89 M143.5 82.5 V89" stroke="#fff6e3" stroke-width="2" stroke-linecap="round"/>
+</svg>

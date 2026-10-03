@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>澳门一日游 · 路线地图</title>
+  <meta name="description" content="澳门一日游插画路线地图：从澳门外港客运码头出发，途经你输入的五个地点，沿真实道路到达氹仔客运码头。">
+  <meta name="theme-color" content="#f3ece0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1a23" media="(prefers-color-scheme: dark)">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="澳门一日游">
+  <meta property="og:title" content="澳门一日游 · 路线地图">
+  <meta property="og:description" content="外港码头 → 精选景点 → 氹仔码头，一张图看懂澳门一日游路线。">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/icons/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <!-- Icon sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <defs>
+      <symbol id="i-walk" viewBox="0 0 24 24"><circle cx="13" cy="4.2" r="1.9"/><path d="M10.2 21l1.9-6.2M15.6 21l-1.7-5.1-2.6-2.4.9-4.6 2.6 2.8h3.2M11.6 8.9L8.3 10.6 7.4 13.8"/></symbol>
+      <symbol id="i-car" viewBox="0 0 24 24"><path d="M3.5 17.5v-4.2l2.1-5.6c.3-.7.9-1.2 1.7-1.2h9.4c.8 0 1.4.5 1.7 1.2l2.1 5.6v4.2"/><path d="M3.5 13.3h17M3.5 17.5h17"/><circle cx="7.5" cy="17.6" r="1.7"/><circle cx="16.5" cy="17.6" r="1.7"/><path d="M10 4h4v2.5h-4z"/></symbol>
+      <symbol id="i-ferry" viewBox="0 0 24 24"><path d="M2.5 18.5c1.6 1.2 3.2 1.2 4.8 0s3.2-1.2 4.8 0 3.2 1.2 4.8 0 3.2-1.2 4.6 0"/><path d="M4.6 15.4 3.5 10.6h17l-1.1 4.8"/><path d="M7.5 10.6V6.8h9v3.8"/><path d="M12 3.5v3.3"/></symbol>
+      <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7.6"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 4.8-9 4.8-9-4.8z"/><path d="m3 12.2 9 4.8 9-4.8"/><path d="m3 16.4 9 4.8 9-4.8"/></symbol>
+      <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path d="M8.5 15.5c2-4.5 5-1.5 7-7"/></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3.5v11.5"/><path d="m8 7.5 4-4 4 4"/><path d="M6 11.5H5v8.2c0 .7.6 1.3 1.3 1.3h11.4c.7 0 1.3-.6 1.3-1.3v-8.2h-1"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4.2L19.4 8.8a2 2 0 0 0 0-2.8l-1.4-1.4a2 2 0 0 0-2.8 0L4 15.8z"/><path d="m13.5 6.5 4 4"/></symbol>
+      <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-nav" viewBox="0 0 24 24"><path d="M3.5 11 20.5 3.5 13 20.5l-2-7.5z"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+      <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3.5 7.5h17v3a1.8 1.8 0 0 0 0 3.6v3h-17v-3a1.8 1.8 0 0 0 0-3.6z"/><path d="M14.5 7.5v10" stroke-dasharray="1.6 2"/></symbol>
+      <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v.1h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v5h5"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9.5" rx="2"/><path d="M8.2 11V7.8a3.8 3.8 0 0 1 7.6 0V11"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.8-6-6.8-11.2a6.8 6.8 0 0 1 13.6 0C18.8 15 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.4"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.2"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+      <symbol id="i-collapse" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9.5 4.5v15M15.5 9.5 13 12l2.5 2.5"/></symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9.5 4.5v15M13 9.5l2.5 2.5-2.5 2.5"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
+      <symbol id="tile" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#1f4e79"/><g fill="#fffaf0"><ellipse cx="16" cy="9.6" rx="3.9" ry="5.6"/><ellipse cx="16" cy="22.4" rx="3.9" ry="5.6"/><ellipse cx="9.6" cy="16" rx="5.6" ry="3.9"/><ellipse cx="22.4" cy="16" rx="5.6" ry="3.9"/></g><g fill="#fffaf0" opacity=".62"><ellipse cx="16" cy="6.3" rx="1.6" ry="2.5" transform="rotate(45 16 16)"/><ellipse cx="16" cy="6.3" rx="1.6" ry="2.5" transform="rotate(135 16 16)"/><ellipse cx="16" cy="6.3" rx="1.6" ry="2.5" transform="rotate(225 16 16)"/><ellipse cx="16" cy="6.3" rx="1.6" ry="2.5" transform="rotate(315 16 16)"/></g><circle cx="16" cy="16" r="3.3" fill="#1f4e79"/><circle cx="16" cy="16" r="1.6" fill="#e9b44c"/></symbol>
+    </defs>
+  </svg>
+
+  <div id="app" class="is-loading">
+    <div id="map" role="region" aria-label="澳门地图"></div>
+
+    <div class="map-tools" role="toolbar" aria-label="地图工具">
+      <button class="tool" id="btn-mode" type="button" aria-pressed="false" aria-label="切换到真实地图" title="切换到真实地图"><svg><use href="#i-layers"/></svg></button>
+      <button class="tool" id="btn-fit" type="button" aria-label="查看全程" title="查看全程"><svg><use href="#i-fit"/></svg></button>
+      <button class="tool" id="btn-locate" type="button" aria-label="我的位置" title="我的位置"><svg><use href="#i-locate"/></svg></button>
+      <div class="tool-group only-fine">
+        <button class="tool" id="btn-zoom-in" type="button" aria-label="放大"><svg><use href="#i-plus"/></svg></button>
+        <button class="tool" id="btn-zoom-out" type="button" aria-label="缩小"><svg><use href="#i-minus"/></svg></button>
+      </div>
+    </div>
+
+    <section class="sheet" id="sheet" aria-label="路线地点">
+      <div class="sheet-grip" id="sheet-grip"><span class="grip-bar" aria-hidden="true"></span></div>
+
+      <!-- Stop list -->
+      <div class="sheet-view" id="view-list">
+        <div class="sheet-head">
+          <div class="summary">
+            <h1 class="summary-main" id="title">澳门一日游</h1>
+            <p class="summary-sub" id="credit">Made by Jiaqi Wang</p>
+          </div>
+          <button class="icon-btn only-wide" id="btn-collapse" type="button" aria-label="收起面板" title="收起面板"><svg><use href="#i-collapse"/></svg></button>
+        </div>
+        <div class="sheet-scroll" id="list-scroll">
+          <ol class="stops" id="stops"></ol>
+          <p class="hint">点任意一站修改地点，可选热门景点，也可以输入任何澳门地名、酒店或餐厅；用「添加一站」增加站点，点 × 删除。起点与终点固定。你的修改只保存在自己的浏览器里。</p>
+          <footer class="sheet-foot">
+            <p>插画地图与真实地图严格对齐；路线沿真实道路计算（步行或车行），仅供参考。</p>
+            <p>地图数据 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者 · 路线 OSRM · 搜索 Nominatim · 地图库 <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a></p>
+          </footer>
+        </div>
+      </div>
+
+      <!-- Search for one stop -->
+      <div class="sheet-view" id="view-search" hidden>
+        <div class="sheet-head search-head">
+          <button class="icon-btn" id="btn-back" type="button" aria-label="返回"><svg><use href="#i-back"/></svg></button>
+          <p class="summary-main" id="search-title">第一站</p>
+        </div>
+        <form class="search-box" id="search-form" autocomplete="off" role="search">
+          <svg aria-hidden="true"><use href="#i-search"/></svg>
+          <input id="search-input" type="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="输入地点，如：大三巴牌坊" aria-label="地点名称">
+          <button class="icon-btn" id="search-clear" type="button" aria-label="清空输入" hidden><svg><use href="#i-close"/></svg></button>
+        </form>
+        <div class="sheet-scroll" id="search-scroll">
+          <div id="search-results" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <button class="panel-open" id="btn-expand" type="button" aria-label="展开路线面板" hidden>
+      <svg aria-hidden="true"><use href="#i-expand"/></svg><span id="panel-open-label">路线</span>
+    </button>
+
+    <div class="loading" id="loading" aria-live="polite">
+      <svg class="loading-tile" aria-hidden="true"><use href="#tile"/></svg>
+      <p>正在打开澳门地图…</p>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <noscript><p class="noscript">本页面需要启用 JavaScript 才能显示地图。</p></noscript>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="hacsa-canopy"><path d="M20 76 Q62 4 104 76 Q93.5 68 83 76 Q72.5 68 62 76 Q51.5 68 41 76 Q30.5 68 20 76 Z"/></clipPath>
+    <clipPath id="hacsa-ball"><circle cx="104" cy="134" r="9"/></clipPath>
+    <clipPath id="hacsa-sand"><path d="M8 146 C14 126 46 112 82 112 C118 112 146 124 152 144 C130 152 30 152 8 146 Z"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- palm trunk -->
+    <path d="M114 138 C118 110 114 82 102 54 L112 50 C126 80 130 110 126 138 Z" fill="#a0674b"/>
+  </g>
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6">
+    <path d="M106 66 Q111 66 115 62"/>
+    <path d="M110 80 Q115 80 120 76"/>
+    <path d="M113 95 Q118 95 123 91"/>
+    <path d="M115 110 Q120 110 125 106"/>
+  </g>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- palm fronds -->
+    <path d="M106 52 C92 34 70 36 58 58 C74 50 90 50 106 52 Z" fill="#7cc47f"/>
+    <path d="M106 52 C120 40 144 44 152 64 C138 56 122 54 106 52 Z" fill="#7cc47f"/>
+    <path d="M106 52 C100 30 84 20 70 22 C84 32 96 40 106 52 Z" fill="#3f8f5a"/>
+    <path d="M106 52 C114 30 132 22 146 28 C130 34 116 42 106 52 Z" fill="#3f8f5a"/>
+    <path d="M106 52 C98 60 92 72 92 86 C100 74 106 64 106 52 Z" fill="#7cc47f"/>
+    <circle cx="101" cy="58" r="5.5" fill="#a0674b"/>
+    <circle cx="111" cy="58" r="5.5" fill="#a0674b"/>
+  </g>
+  <g stroke="#3f8f5a" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M100 51 C88 48 76 50 66 55"/>
+    <path d="M112 52 C124 50 136 53 146 60"/>
+  </g>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- sand -->
+    <path d="M8 146 C14 126 46 112 82 112 C118 112 146 124 152 144 C130 152 30 152 8 146 Z" fill="#f5d9a8"/>
+  </g>
+  <g clip-path="url(#hacsa-sand)">
+    <path d="M112 112 C138 116 150 130 154 146 H112 C126 136 126 122 112 112 Z" fill="#d9c7a7"/>
+    <g fill="#4a3a32" opacity="0.35">
+      <circle cx="34" cy="132" r="1.6"/><circle cx="48" cy="124" r="1.6"/><circle cx="72" cy="122" r="1.6"/>
+      <circle cx="88" cy="130" r="1.6"/><circle cx="120" cy="128" r="1.6"/><circle cx="132" cy="138" r="1.6"/>
+      <circle cx="80" cy="140" r="1.6"/><circle cx="58" cy="136" r="1.6"/><circle cx="104" cy="120" r="1.6"/>
+    </g>
+  </g>
+  <!-- beach umbrella -->
+  <g transform="rotate(-8 60 140)">
+    <path d="M62 140 V44" stroke="#4a3a32" stroke-width="8" stroke-linecap="round"/>
+    <path d="M62 140 V44" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <path d="M20 76 Q62 4 104 76 Q93.5 68 83 76 Q72.5 68 62 76 Q51.5 68 41 76 Q30.5 68 20 76 Z" fill="#ffffff"/>
+    <g clip-path="url(#hacsa-canopy)" fill="#ef7d57">
+      <path d="M62 40 L14 82 H41 Z"/>
+      <path d="M62 40 L62 82 H83 Z"/>
+    </g>
+    <path d="M62 40 L104 82 H110 V40 Z" fill="#4a3a32" opacity="0.12" clip-path="url(#hacsa-canopy)"/>
+    <path d="M20 76 Q62 4 104 76 Q93.5 68 83 76 Q72.5 68 62 76 Q51.5 68 41 76 Q30.5 68 20 76 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="62" cy="39" r="4.5" fill="#ef7d57" stroke="#4a3a32" stroke-width="3"/>
+    <path d="M36 56 Q44 46 54 42" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9"/>
+  </g>
+  <!-- beach ball -->
+  <circle cx="104" cy="134" r="9" fill="#ffffff"/>
+  <g clip-path="url(#hacsa-ball)">
+    <path d="M104 125 C92 125 92 143 104 143 C98 138 98 130 104 125 Z" fill="#e0512b"/>
+    <path d="M104 125 C116 125 116 143 104 143 C110 138 110 130 104 125 Z" fill="#2f6db5"/>
+  </g>
+  <circle cx="104" cy="134" r="9" fill="none" stroke="#4a3a32" stroke-width="3.5"/>
+  <path d="M100 129 Q101.5 127.5 103 127.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- little waves -->
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M4 150 V139 Q11 131 19 137 Q26 129 34 136 Q41 129 49 137 Q56 132 62 140 Q66 146 68 151 Z" fill="#8fd3f4"/>
+  </g>
+  <path d="M10 136 Q15 132 19 136 M26 133 Q31 130 34 134 M41 133 Q46 130 49 135" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M14 145 Q18 142 22 145 M32 145 Q36 142 40 145" stroke="#2f6db5" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+</svg>

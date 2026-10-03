@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <ellipse cx="80" cy="148" rx="48" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <!-- grand staircase -->
+  <path d="M42 124 H118 L136 147 H24 Z" fill="#d9c7a7"/>
+  <g fill="#f5d9a8">
+    <path d="M42 124 H118 L120.3 127 H39.7 Z"/>
+    <path d="M37.3 130 H122.7 L125 133 H35 Z"/>
+    <path d="M32.6 136 H127.4 L129.7 139 H30.3 Z"/>
+    <path d="M28.3 141.5 H131.7 L134 144.5 H26 Z"/>
+  </g>
+  <path d="M100 124 H118 L136 147 H112 Z" fill="#4a3a32" opacity="0.12"/>
+  <g stroke="#4a3a32" stroke-width="2.5" stroke-linecap="round" opacity="0.55">
+    <path d="M37.3 130 H122.7 M32.6 136 H127.4 M28.3 141.5 H131.7"/>
+  </g>
+  <path d="M42 124 H118 L136 147 H24 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tier 1 -->
+    <rect x="34" y="97" width="92" height="28" fill="#f5d9a8"/>
+    <!-- tier 2 -->
+    <rect x="34" y="71" width="92" height="24" fill="#f5d9a8"/>
+    <!-- tier 3 + volutes -->
+    <path d="M46 52 C38 54 34 60 33 67 H46 Z" fill="#f5d9a8"/>
+    <path d="M114 52 C122 54 126 60 127 67 H114 Z" fill="#f5d9a8"/>
+    <rect x="46" y="49" width="68" height="18" fill="#f5d9a8"/>
+    <!-- tier 4 + volutes -->
+    <path d="M58 34 C52 36 50 41 50 46 H58 Z" fill="#f5d9a8"/>
+    <path d="M102 34 C108 36 110 41 110 46 H102 Z" fill="#f5d9a8"/>
+    <rect x="58" y="31" width="44" height="16" fill="#f5d9a8"/>
+    <!-- pediment -->
+    <path d="M55 29 L80 10 L105 29 Z" fill="#f5d9a8"/>
+  </g>
+  <!-- right-side shading -->
+  <g fill="#4a3a32" opacity="0.13">
+    <rect x="114" y="99" width="10" height="24"/>
+    <rect x="114" y="73" width="10" height="20"/>
+    <rect x="104" y="51" width="8" height="14"/>
+    <rect x="95" y="33" width="5" height="12"/>
+    <path d="M80 13 L101 27.5 H88 Z"/>
+  </g>
+  <!-- openings: sky through the ruined facade -->
+  <g fill="#8fd3f4" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <path d="M70 125 V110 A10 10 0 0 1 90 110 V125 Z"/>
+    <path d="M44 125 V114 A6.5 6.5 0 0 1 57 114 V125 Z"/>
+    <path d="M103 125 V114 A6.5 6.5 0 0 1 116 114 V125 Z"/>
+    <path d="M73 93 V83 A7 7 0 0 1 87 83 V93 Z"/>
+    <path d="M45 91 V83 A5.5 5.5 0 0 1 56 83 V91 Z"/>
+    <path d="M104 91 V83 A5.5 5.5 0 0 1 115 83 V91 Z"/>
+    <circle cx="58" cy="58" r="4.5"/>
+    <circle cx="102" cy="58" r="4.5"/>
+    <path d="M75 46 V40 A5 5 0 0 1 85 40 V46 Z"/>
+    <circle cx="80" cy="22" r="3.5"/>
+  </g>
+  <!-- statue niche -->
+  <path d="M74 66 V58 A6 6 0 0 1 86 58 V66 Z" fill="#a0674b" stroke="#4a3a32" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="80" cy="58.5" r="2.4" fill="#fff6e3"/>
+  <path d="M77 66 V62.5 Q80 60.5 83 62.5 V66 Z" fill="#fff6e3"/>
+  <!-- columns -->
+  <g fill="#d9c7a7" stroke="#4a3a32" stroke-width="2.2">
+    <rect x="37" y="99" width="4" height="26"/>
+    <rect x="61" y="99" width="4" height="26"/>
+    <rect x="95" y="99" width="4" height="26"/>
+    <rect x="119" y="99" width="4" height="26"/>
+    <rect x="37" y="73" width="4" height="22"/>
+    <rect x="62" y="73" width="4" height="22"/>
+    <rect x="94" y="73" width="4" height="22"/>
+    <rect x="119" y="73" width="4" height="22"/>
+    <rect x="66" y="51" width="3.5" height="16"/>
+    <rect x="90.5" y="51" width="3.5" height="16"/>
+  </g>
+  <!-- cornices -->
+  <g fill="#d9c7a7" stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round">
+    <rect x="29" y="93" width="102" height="6" rx="1.5"/>
+    <rect x="29" y="67" width="102" height="6" rx="1.5"/>
+    <rect x="42" y="45.5" width="76" height="5" rx="1.5"/>
+    <rect x="53" y="27.5" width="54" height="5" rx="1.5"/>
+  </g>
+  <!-- volute curls -->
+  <g fill="#d9c7a7" stroke="#4a3a32" stroke-width="2.4">
+    <circle cx="38.5" cy="62.5" r="3.2"/>
+    <circle cx="121.5" cy="62.5" r="3.2"/>
+    <circle cx="53.5" cy="42.5" r="2.4"/>
+    <circle cx="106.5" cy="42.5" r="2.4"/>
+  </g>
+  <!-- highlights -->
+  <g stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.9">
+    <path d="M32 95 H58 M32 69 H54 M45 47.5 H62 M56 29.5 H66"/>
+    <path d="M60 26 L76 14"/>
+  </g>
+  <!-- cross -->
+  <path d="M80 11 V2.5 M75.5 6 H84.5" stroke="#4a3a32" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+  <path d="M80 10 V3 M76 6 H84" stroke="#d9c7a7" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+</svg>

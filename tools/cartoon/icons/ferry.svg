@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="ferry-hull"><path d="M6 106 H148 V134 H40 C24 134 12 122 6 106 Z"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="48" ry="7" fill="#4a3a32" opacity="0.18"/>
+  <!-- white wake trailing from the stern -->
+  <g stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M116 132 Q123 125 130 130 Q137 122 144 128 Q151 121 157 127 Q160 134 154 138 Q148 144 138 142 Q128 146 118 141 Z" fill="#ffffff"/>
+    <path d="M44 134 Q32 140 20 137 Q12 142 6 136 Q2 130 6 125 Q10 131 18 131 Q28 133 38 128 Z" fill="#ffffff"/>
+  </g>
+  <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- upper deck (bridge) -->
+    <path d="M58 88 C62 78 70 72 82 72 H128 V88 Z" fill="#ffffff"/>
+    <!-- roof seen from above -->
+    <path d="M82 72 L86 66 H132 L128 72 Z" fill="#dfe3e6"/>
+    <path d="M128 72 L132 66 V84 L128 88 Z" fill="#dfe3e6"/>
+    <!-- main cabin -->
+    <path d="M26 108 C32 98 40 90 54 88 H140 V108 Z" fill="#ffffff"/>
+    <path d="M140 88 L146 84 V104 L140 108 Z" fill="#dfe3e6"/>
+    <!-- hull -->
+    <path d="M6 106 H148 V134 H40 C24 134 12 122 6 106 Z" fill="#ffffff"/>
+    <path d="M148 106 L154 102 V128 L148 134 Z" fill="#dfe3e6"/>
+  </g>
+  <!-- livery stripes -->
+  <g clip-path="url(#ferry-hull)">
+    <rect x="0" y="114" width="160" height="5" fill="#c8372d"/>
+    <rect x="0" y="121" width="160" height="9" fill="#1f4e79"/>
+    <rect x="96" y="106" width="60" height="30" fill="#4a3a32" opacity="0.08"/>
+  </g>
+  <path d="M6 106 H148 V134 H40 C24 134 12 122 6 106 Z" fill="none" stroke="#4a3a32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M148 114 L154 110.5 M148 124 L154 120" stroke="#1f4e79" stroke-width="4" stroke-linecap="round"/>
+  <!-- windows -->
+  <g stroke="#4a3a32" stroke-width="3" stroke-linejoin="round">
+    <path d="M30 105 C35 97 42 92 52 90 L54 105 Z" fill="#1f4e79"/>
+    <rect x="58" y="93" width="78" height="10" rx="3" fill="#2f6db5"/>
+    <path d="M62 86 C66 80 70 76 78 75 L79 86 Z" fill="#1f4e79"/>
+    <rect x="83" y="76" width="40" height="7" rx="2.5" fill="#2f6db5"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+    <path d="M71 94.5 V101.5 M84 94.5 V101.5 M97 94.5 V101.5 M110 94.5 V101.5 M123 94.5 V101.5"/>
+    <path d="M96 77.5 V81.5 M109 77.5 V81.5"/>
+  </g>
+  <path d="M36 101 Q40 96 46 94" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85"/>
+  <!-- mast with red light -->
+  <path d="M112 66 V52 M106 57 H118" stroke="#4a3a32" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="112" cy="50" r="3.2" fill="#e0512b" stroke="#4a3a32" stroke-width="2"/>
+  <!-- foam details -->
+  <path d="M126 137 Q132 133 138 136 M143 131 Q148 128 152 131" stroke="#8fd3f4" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <g stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M58 142 H76 M86 145 H100 M108 141 H114"/>
+  </g>
+</svg>

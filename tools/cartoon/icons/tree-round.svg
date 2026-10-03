@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <clipPath id="treeround-crown"><path d="M28 82 C18 58 34 26 62 24 C74 12 104 14 114 30 C136 36 144 64 132 86 C130 110 106 120 82 116 C58 122 30 108 28 82 Z"/></clipPath>
+  </defs>
+  <ellipse cx="80" cy="148" rx="40" ry="8" fill="#4a3a32" opacity="0.18"/>
+  <g stroke="#4a3a32" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M68 146 L71 100 H89 L92 146 Z" fill="#a0674b"/>
+    <path d="M28 82 C18 58 34 26 62 24 C74 12 104 14 114 30 C136 36 144 64 132 86 C130 110 106 120 82 116 C58 122 30 108 28 82 Z" fill="#7cc47f"/>
+  </g>
+  <g clip-path="url(#treeround-crown)">
+    <path d="M140 40 C140 84 118 108 76 112 C96 104 116 90 122 54 Z M76 112 H150 V130 H60 Z" fill="#3f8f5a"/>
+  </g>
+  <path d="M28 82 C18 58 34 26 62 24 C74 12 104 14 114 30 C136 36 144 64 132 86 C130 110 106 120 82 116 C58 122 30 108 28 82 Z" fill="none" stroke="#4a3a32" stroke-width="7" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="50" rx="14" ry="9" fill="#ffffff" opacity="0.55" transform="rotate(-25 60 50)"/>
+</svg>

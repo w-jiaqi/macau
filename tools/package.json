@@ -1,0 +1,13 @@
+{
+  "name": "macau-map-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Build tools for the Macau tourist map (illustrated map rasterizer).",
+  "type": "module",
+  "scripts": {
+    "cartoon": "cd .. && python3 tools/cartoon/render.py"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}
