@@ -452,8 +452,9 @@ a { color: var(--accent); }
 .pin-wrap .pin-tag.tag-t { left: 50%; top: auto; bottom: calc(100% + 2px); transform: translateX(-50%); }
 .z-lt-13 .pin-wrap:not(.pin-wrap--term) .pin-tag { display: none; }
 
-/* the illustration already names built-in places, so their HTML tags only show on the real map */
-.mode-cartoon .has-baked .pin-tag { display: none; }
+/* the illustration already names built-in places; their HTML tags only help when zoomed out
+   (the drawn names are too small to read there) and on the real map */
+.mode-cartoon:not(.z-lt-14) .has-baked .pin-tag { display: none; }
 
 /* ---------- two aligned maps ---------- */
 .mode-cartoon { background: var(--cartoon-sea, #6cc5e0) !important; }

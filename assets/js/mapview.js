@@ -28,7 +28,7 @@ const WIDTH = {
   rail: [[12, 0.9], [14, 1.5], [16, 2.2], [18, 3]],
 };
 const CASING = [[12, 0.9], [14, 1.4], [16, 2], [18, 2.6]];
-const MAX_ZOOM = { cartoon: 17, real: 18 };
+const MAX_ZOOM = { cartoon: 16.5, real: 18 }; // one 3000 px picture gets soft beyond ~z16
 
 // Leaflet's ImageOverlay resizes the <img> (CSS width/height) after every zoom. For a 3000×4211 picture
 // the browser then needs a frame or two to re-raster it before the next zoom animation can start, so
@@ -120,14 +120,18 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
     const opts = { pane: 'cartoon', interactive: false, className: 'cartoon-img', alt: '澳门插画地图' };
     const preview = new PictureOverlay(cfg.preview || cfg.image, b, opts).addTo(map);
     if (cfg.image && cfg.image !== cfg.preview) {
-      // Swap in the full-resolution picture once it has downloaded.
-      const img = new Image();
-      img.decoding = 'async';
-      img.onload = () => {
-        const full = new PictureOverlay(cfg.image, b, opts).addTo(map);
-        full.once('load', () => setTimeout(() => preview.remove(), 400));
+      // After the small preview is showing, fetch the full-resolution picture and swap it in.
+      const loadFull = () => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => {
+          const full = new PictureOverlay(cfg.image, b, opts).addTo(map);
+          full.once('load', () => setTimeout(() => preview.remove(), 400));
+        };
+        img.src = cfg.image;
       };
-      img.src = cfg.image;
+      preview.once('load', loadFull);
+      preview.once('error', loadFull);
     }
     return new Promise((resolve) => {
       preview.once('load', resolve);
@@ -411,7 +415,7 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
   }
 
   function flyTo(lat, lng, zoom) {
-    const z = zoom ?? Math.max(map.getZoom(), 15.5);
+    const z = zoom ?? Math.max(map.getZoom(), 15);
     const pad = getPadding();
     const size = map.getSize();
     const visCx = pad.left + (size.x - pad.left - pad.right) / 2;
@@ -434,7 +438,7 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
         L.circle(ll, { radius: acc, className: 'you-acc', interactive: false, renderer: routeRenderer }),
         L.marker(ll, { interactive: false, keyboard: false, icon: L.divIcon({ className: 'you-wrap', html: '<span class="you-dot"></span>', iconSize: [20, 20], iconAnchor: [10, 10] }) }),
       ]).addTo(map);
-      if (BOUNDS.contains(ll)) flyTo(ll.lat, ll.lng, Math.max(map.getZoom(), 16));
+      if (BOUNDS.contains(ll)) flyTo(ll.lat, ll.lng, Math.max(map.getZoom(), 15.5));
       else toast('你目前不在澳门地图范围内');
     }, (err) => {
       el.classList.remove('is-locating');

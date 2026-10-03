@@ -12,8 +12,8 @@
   </g>
   <!-- flag -->
   <path d="M80 70 V14" stroke="#4a3a32" stroke-width="4" stroke-linecap="round"/>
-  <path d="M82 15 Q92 11 101 16 T119 17 V32 Q110 28 101 31 T82 30 Z" fill="#e0512b" stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round"/>
-  <path d="M82 24 Q92 20 101 25 T119 26" fill="none" stroke="#f2c14e" stroke-width="3"/>
+  <path d="M82 15 L121 23.5 L82 32 Z" fill="#ef7d57" stroke="#4a3a32" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M84 19 L104 23.5" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
   <circle cx="80" cy="12" r="3.5" fill="#f2c14e" stroke="#4a3a32" stroke-width="2.5"/>
   <g stroke="#4a3a32" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
     <!-- terrace top -->

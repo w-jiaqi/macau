@@ -2,12 +2,21 @@
 """Render the illustrated ("Disneyland park map" style) Macau map picture.
 
 The picture is drawn programmatically from the real OpenStreetMap geometry in
-data/basemap.geojson, in the Web Mercator projection, so it lines up exactly
-with the real (Leaflet) map that the frontend keeps underneath it for
-locations, roads and routing.  Nothing structural is moved: the Macau land
-fill edge is the real coastline, roads are the real roads (simplified and
-smoothed by a pixel or two), and every landmark icon stands with its anchor
-on the attraction's real coordinates.
+data/basemap.geojson (+ the lanes and footpaths in data/basemap-detail.geojson),
+in the Web Mercator projection, so it lines up exactly with the real (Leaflet)
+map that the frontend keeps underneath it for locations, roads and routing.
+Nothing structural is moved: the Macau land fill edge is the real coastline,
+and every road, lane, footpath, bridge and the LRT is the real line, simplified
+and corner-smoothed by at most ~1.5 px, so routes drawn by the frontend always
+run on a drawn way.  Landmark icons stand with their anchor on the attraction's
+real coordinates, except where neighbours are so close that the drawings would
+pile up: then an icon steps aside (<= ~32 px, ~100 m; up to 130 px for the
+sprawling Cotai resorts) under two hard rules - it never covers another sight's
+true spot (where the frontend drops its numbered route pin) and its own spot
+stays on / within 8 px of its outline.  Names keep >= 28 px off other sights'
+spots; the ferry terminals' names sit right beside their true spots, with a
+ferry docked in the nearest water.  The picture's border fades to the sea
+colour (data/cartoon.json "sea"), so panning past it shows no false coastline.
 
 Georeference (the frontend depends on it - do not change casually):
   bounds  south 22.105, west 113.522, north 22.222, east 113.612 (WGS-84)
@@ -17,6 +26,8 @@ Georeference (the frontend depends on it - do not change casually):
           mercY(lat) = ln(tan(pi/4 + lat_rad/2))
 
 Pipeline:
+  tools/cartoon/icons/*.svg
+    -> node tools/cartoon/rasterize.mjs --icons  (icon silhouettes, out/icon-shapes.json)
   data/basemap.geojson, data/labels.json, data/places.json, tools/cartoon/icons/*.svg
     -> tools/cartoon/out/cartoon.svg            (one big SVG, gitignored)
     -> node tools/cartoon/rasterize.mjs          (resvg-js + fonts in tools/fonts)
@@ -26,7 +37,7 @@ Pipeline:
        data/cartoon.json           bounds / sizes / image paths / sea colour
 
 Usage (from the repository root):
-  pip install -r tools/requirements.txt     # shapely, requests, pillow (fonttools optional)
+  pip install -r tools/requirements.txt     # shapely, requests, pillow, fonttools
   (cd tools && npm install)                 # @resvg/resvg-js
   python3 tools/cartoon/render.py           # full build
   python3 tools/cartoon/render.py --svg-only            # just write the SVG
@@ -38,8 +49,15 @@ Overpass and cached under tools/.cache/cartoon/); without network a rough
 hand-made split is used.  Icons missing from tools/cartoon/icons/ are drawn as
 a neutral placeholder badge.  Everything is seeded, so re-runs are identical.
 
+Lettering uses ZCOOL KuaiLe, which has no 氹 (needed for 氹仔 / 路氹城).
+load_dang() takes the glyph from tools/fonts/DangHeavy-Subset.otf (a one-glyph
+subset of Source Han Sans CN Heavy, Apache-2.0), fits it to KuaiLe's size,
+rounds its corners and draws it as a path; the same font is also the resvg
+fallback family for 氹 if fontTools is missing.
+
 Map data (c) OpenStreetMap contributors, ODbL 1.0.  Fonts: ZCOOL KuaiLe and
-ZCOOL QingKe HuangYou, SIL Open Font License 1.1.
+ZCOOL QingKe HuangYou, SIL Open Font License 1.1; the 氹 glyph from Source Han
+Sans CN Heavy, (c) 2014 Adobe, Apache License 2.0 (tools/fonts/LICENSE-DangHeavy.txt).
 """
 from __future__ import annotations
 
@@ -59,9 +77,8 @@ from pathlib import Path
 import numpy as np
 import shapely
 from shapely import affinity, make_valid
-from shapely.geometry import (GeometryCollection, LineString, MultiLineString,
-                              MultiPolygon, Point, Polygon, box, shape)
-from shapely.ops import linemerge, polygonize, unary_union
+from shapely.geometry import LineString, Point, Polygon, box, shape
+from shapely.ops import linemerge, polygonize, substring, unary_union
 from shapely.strtree import STRtree
 
 HERE = Path(__file__).resolve().parent
@@ -78,6 +95,9 @@ W, H = 3000, 4211
 SMALL_W, SMALL_H = 1500, 2106
 IMAGE_REL = "assets/map/cartoon.webp"
 PREVIEW_REL = "assets/map/cartoon-sm.webp"
+# Optional title ribbon drawn in the open sea, e.g. "澳门一日游"; None leaves it out
+# (the page already shows the title in its panel).
+MAP_TITLE = None
 
 
 def _mercy(lat):
@@ -126,33 +146,49 @@ OTHER_FILL = "#d5e2c6"
 OTHER_EDGE = "#a8ba97"
 OTHER_ROAD = "#eef3e5"
 DISTRICT_FILL = {
-    "peninsula": "#fde38c",   # butter yellow
+    "peninsula": "#feecb0",   # light butter (kept clear of the icons' golds)
     "taipa": "#ffcaa3",       # peach
     "cotai": "#e6d1f4",       # soft lavender
-    "coloane": "#c6ecd1",     # mint
+    "coloane": "#dcefc2",     # warm pale green (same family as PARK)
 }
 PARK = "#a8d98f"
 PARK_EDGE = "#74b866"
 ROAD_FILL = "#fffaf0"
-ROAD_EDGE = "#dfc29a"
+ROAD_EDGE = "#e0c49c"
+LANE_FILL = "#fff6dc"     # mid roads and lanes: no casing, low contrast
+PATH_DOT = "#fffdf6"
 BRIDGE_EDGE = "#7f9bb5"
 BRIDGE_PIER = "#6a87a3"
+BRIDGE_TEXT = "#4f7394"
 RAIL = "#16a39a"
-AIRPORT = "#ebe6f0"
+AIRPORT = "#e3e8ec"
 RUNWAY = "#a2abb3"
 RUNWAY_EDGE = "#6f7a83"
 BEACH = "#f8e2a6"
 BEACH_DOT = "#d9b36a"
 INLAND_SHALLOW = "#a2e0f0"
 
-FAM_KUAILE = "ZCOOL KuaiLe, ZCOOL QingKe HuangYou"
+FAM_KUAILE = "ZCOOL KuaiLe, Dang Heavy, ZCOOL QingKe HuangYou"
 FAM_QINGKE = "ZCOOL QingKe HuangYou, ZCOOL KuaiLe"
 
 FAMOUS = {"ruins-st-paul", "senado-square", "a-ma-temple", "macau-tower",
           "grand-lisboa", "venetian", "parisian", "londoner", "studio-city",
           "a-ma-statue", "panda-pavilion"}
 FERRY_IDS = {"outer-harbour": "外港码头", "taipa-ferry": "氹仔码头"}
+RESORTS = {"venetian", "parisian", "londoner", "studio-city", "galaxy", "wynn-palace"}
+WATER_OK = {"kun-iam", "fishermans-wharf"}   # icons that may stand at / in the water's edge
+# icon sizes (px wide in the 3000 px picture): hero scale where there is room
+ICON_SIZE = {"venetian": 200, "parisian": 200, "londoner": 200, "studio-city": 200, "galaxy": 200,
+             "wynn-palace": 200, "macau-tower": 168, "a-ma-statue": 140, "panda-pavilion": 140,
+             "rua-do-cunha": 140, "taipa-houses": 140, "hac-sa-beach": 140, "coloane-village": 140,
+             "kun-iam": 120, "fishermans-wharf": 120}
+PIN_R_ICON = 22        # px kept clear round other sights' true spots (the frontend's route pins)
+PIN_R_LABEL = 28       # ...and round them for text
+OWN_SPOT_MAX = 8       # an icon that steps aside must keep its own spot this close to its outline
+# shorter display names for a few long data/labels.json entries
+LABEL_ALIAS = {"关闸（拱北口岸）": "关闸口岸", "港珠澳大桥澳门口岸": "港珠澳口岸"}
 
+COTAI_SOUTH_LAT = 22.1375   # lavender (Cotai) stops here; south of it is drawn as Coloane
 CLIFF_DY = 12          # px the raised island's cliff shows below the land top
 CLIP = box(-140, -140, W + 140, H + 140)
 CANVAS = box(0, 0, W, H)
@@ -259,6 +295,40 @@ def chaikin(coords, iters=2):
     return pts
 
 
+def smooth_capped(coords, iters=2, maxdev=1.4):
+    """Chaikin-style corner cutting that never moves a line more than ~maxdev px.
+
+    Plain Chaikin cuts every corner by a quarter of its segments, which on a
+    sharp junction turn can shift the drawn road 15+ px off the real one.  Here
+    the cut at each vertex is limited so the chord stays within maxdev of the
+    corner (cut = maxdev / sin(turn / 2)): gentle bends still come out smooth,
+    sharp corners and through-junctions stay put.  End points are kept.
+    """
+    pts = np.asarray(coords, float)
+    for _ in range(iters):
+        if len(pts) < 3:
+            break
+        seg = pts[1:] - pts[:-1]
+        L = np.hypot(seg[:, 0], seg[:, 1])
+        ok = L > 1e-9
+        if not ok.all():
+            pts = np.vstack([pts[:1], pts[1:][ok]])
+            continue
+        u = seg / L[:, None]
+        cosang = np.clip((u[:-1] * u[1:]).sum(axis=1), -1.0, 1.0)
+        sinh = np.sin(np.arccos(cosang) / 2)
+        cut = np.minimum(np.minimum(0.25 * L[:-1], 0.25 * L[1:]), maxdev / np.maximum(sinh, 1e-6))
+        a = pts[1:-1] - u[:-1] * cut[:, None]
+        b = pts[1:-1] + u[1:] * cut[:, None]
+        mid = np.empty((2 * len(a), 2))
+        mid[0::2] = a
+        mid[1::2] = b
+        pts = np.vstack([pts[:1], mid, pts[-1:]])
+        keep = np.r_[True, np.hypot(*(pts[1:] - pts[:-1]).T) > 0.05]
+        pts = pts[keep]
+    return pts
+
+
 def poisson(region, r, rng, density=30, exclude=None, bounds=None):
     """Dart-throwing Poisson-disk sampling inside `region` (seeded)."""
     if region is None or region.is_empty:
@@ -295,21 +365,121 @@ def poisson(region, r, rng, density=30, exclude=None, bounds=None):
 
 
 # ---------------------------------------------------------------- fonts / text
+DANG = "氹"   # ZCOOL KuaiLe has no 氹 - see load_dang
+
+
+def _glyph_polys(font, ch, steps=10):
+    """A glyph's outline as a shapely geometry in font units (y up, baseline 0)."""
+    from fontTools.pens.basePen import BasePen
+
+    class FlatPen(BasePen):
+        def __init__(self, gs):
+            super().__init__(gs)
+            self.rings, self.cur = [], []
+
+        def _moveTo(self, p):
+            self.cur = [p]
+
+        def _lineTo(self, p):
+            self.cur.append(p)
+
+        def _curveToOne(self, p1, p2, p3):
+            p0 = self.cur[-1]
+            for i in range(1, steps + 1):
+                t = i / steps
+                u = 1 - t
+                self.cur.append((u ** 3 * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t ** 3 * p3[0],
+                                 u ** 3 * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t ** 3 * p3[1]))
+
+        def _qCurveToOne(self, p1, p2):
+            p0 = self.cur[-1]
+            for i in range(1, steps + 1):
+                t = i / steps
+                u = 1 - t
+                self.cur.append((u * u * p0[0] + 2 * u * t * p1[0] + t * t * p2[0],
+                                 u * u * p0[1] + 2 * u * t * p1[1] + t * t * p2[1]))
+
+        def _closePath(self):
+            if len(self.cur) > 2:
+                self.rings.append(self.cur)
+            self.cur = []
+
+        _endPath = _closePath
+
+    gs = font.getGlyphSet()
+    pen = FlatPen(gs)
+    gs[font.getBestCmap()[ord(ch)]].draw(pen)
+    g = Polygon()
+    for r in pen.rings:
+        g = g.symmetric_difference(make_valid(Polygon(r)))
+    return make_valid(g)
+
+
+DANG_FONT = "DangHeavy-Subset.otf"   # one-glyph subset of Source Han Sans CN Heavy (Apache-2.0)
+DANG_BOLD_CUT = 0.035                # its strokes are heavier: fatten them this much (x fs) less
+
+
+def load_dang(kuaile):
+    """氹 for the ZCOOL KuaiLe lettering, from a heavy sans whose 氹 reads clearly.
+
+    KuaiLe lacks the character and both earlier stand-ins (QingKe HuangYou's
+    glyph and a 乙+水 composed from KuaiLe strokes) read as 飞 once fattened and
+    shadowed at map size.  Source Han Sans Heavy draws 水 big and open; the glyph
+    is scaled into KuaiLe's ink box (x 20..900, y -60..780 of a 920 advance) and
+    its corners are rounded to sit with KuaiLe's soft terminals.  Font units, y up.
+    """
+    from fontTools.ttLib import TTFont
+    g = _glyph_polys(TTFont(str(FONTS / DANG_FONT)), DANG)
+    ref = unary_union([_glyph_polys(kuaile, c).envelope for c in "仔城路水"])
+    kx0, ky0, kx1, ky1 = ref.bounds
+    gx0, gy0, gx1, gy1 = g.bounds
+    s = (ky1 - ky0) / (gy1 - gy0)
+    adv = kuaile["hmtx"].metrics[kuaile.getBestCmap()[ord("水")]][0]
+    g = affinity.scale(g, s, s, origin=(0, 0))
+    gx0, gy0, gx1, gy1 = g.bounds
+    g = affinity.translate(g, adv / 2 - (gx0 + gx1) / 2, (ky0 + ky1) / 2 - (gy0 + gy1) / 2)
+    g = g.buffer(-16, quad_segs=6).buffer(16, quad_segs=6)      # round the convex corners
+    g = g.buffer(8, quad_segs=6).buffer(-8, quad_segs=6)        # ...and soften the inner ones
+    return make_valid(g.simplify(1.5)), adv
+
+
 class TextMetrics:
     """Glyph advances from the real fonts (fontTools), with a sane fallback."""
 
     def __init__(self):
         self.tables = {}
+        self.dang = None
         try:
             from fontTools.ttLib import TTFont
             for key, fn in (("kuaile", "ZCOOLKuaiLe-Regular.ttf"),
                             ("qingke", "ZCOOLQingKeHuangYou-Regular.ttf")):
                 t = TTFont(str(FONTS / fn))
                 self.tables[key] = (t.getBestCmap(), t["hmtx"].metrics, t["head"].unitsPerEm)
+                if key == "kuaile":
+                    try:
+                        upm = self.tables[key][2]
+                        self.dang, adv = load_dang(t)
+                        self.dang_adv = adv / upm
+                        self.dang_upm = upm
+                    except Exception as exc:
+                        self.dang = None
+                        log(f"  (could not load the 氹 glyph: {exc}; resvg falls back to the Dang Heavy font)")
         except Exception as exc:  # pragma: no cover - fontTools is optional
-            log(f"  (fontTools unavailable: {exc}; using approximate text widths)")
+            log(f"  (fontTools unavailable: {exc}; using approximate text widths, fallback-font 氹)")
+
+    def dang_d(self, x, y, fs):
+        """SVG path data for the composed 氹 with its baseline origin at (x, y)."""
+        k = fs / self.dang_upm
+        out = []
+        for p in polys(self.dang):
+            for ring in [p.exterior] + list(p.interiors):
+                cs = list(ring.coords)[:-1]
+                out.append("M" + " ".join(f"{fmt(x + gx * k)},{fmt(y - gy * k)}" for gx, gy in cs) + "Z")
+        return "".join(out)
 
     def adv(self, ch, fam):
+        if ch == DANG and fam == "kuaile" and self.dang is not None:
+            return self.dang_adv
         order = ("kuaile", "qingke") if fam == "kuaile" else ("qingke", "kuaile")
         for key in order:
             if key in self.tables:
@@ -338,12 +508,13 @@ class Label:
 
     def __init__(self, text, cx, cy, fs, fill, halo="#ffffff", halo_w=None,
                  fam="kuaile", ls=0.0, angle=None, opacity=None, kind="",
-                 halo_opacity=None):
+                 halo_opacity=None, bold=0.0):
         self.text, self.cx, self.cy, self.fs = text, cx, cy, fs
         self.fill, self.halo = fill, halo
         self.halo_w = halo_w if halo_w is not None else max(6.0, fs * 0.24)
         self.fam, self.ls, self.angle = fam, ls, angle
         self.opacity, self.kind, self.halo_opacity = opacity, kind, halo_opacity
+        self.bold = bold          # extra same-colour stroke that fattens the letters
         self._layout()
 
     def _layout(self):
@@ -389,39 +560,71 @@ class Label:
         self._layout()
 
     def _runs(self):
+        """(kind, x, baseline y, text, font-family, letter-spacing) pieces.
+
+        kind "t" is ordinary text; kind "g" is the composed 氹 drawn as a path
+        (only in the ZCOOL KuaiLe family, which lacks the glyph).
+        """
         fam = FAM_KUAILE if self.fam == "kuaile" else FAM_QINGKE
+        special = self.fam == "kuaile" and TM.dang is not None and DANG in self.text
+        y = self.cy + 0.36 * self.fs
         if self.glyphs is None:
-            yield self.cx - self.w / 2, self.cy + 0.36 * self.fs, self.text, fam, self.ls
+            if not special:
+                yield "t", self.cx - self.w / 2, y, self.text, fam, self.ls
+                return
+            x = self.cx - self.w / 2
+            buf, bx = "", x
+            for c in self.text:
+                if c == DANG:
+                    if buf:
+                        yield "t", bx, y, buf, fam, self.ls
+                    yield "g", x, y, c, fam, 0
+                    buf = ""
+                else:
+                    if not buf:
+                        bx = x
+                    buf += c
+                x += TM.adv(c, self.fam) * self.fs + self.ls
+            if buf:
+                yield "t", bx, y, buf, fam, self.ls
         else:
             for c, gx, gy, ad in self.glyphs:
-                yield gx - ad / 2, gy + 0.36 * self.fs, c, fam, 0
+                kind = "g" if special and c == DANG else "t"
+                yield kind, gx - ad / 2, gy + 0.36 * self.fs, c, fam, 0
+
+    def _piece(self, kind, x, y, t, fam, ls, attrs):
+        if kind == "g":
+            return f'<path d="{TM.dang_d(x, y, self.fs)}" {attrs}/>'
+        lsa = f' letter-spacing="{fmt(ls)}"' if ls else ""
+        return (f'<text x="{fmt(x)}" y="{fmt(y)}" font-family="{fam}" font-size="{fmt(self.fs)}"{lsa} '
+                f'{attrs}>{esc(t)}</text>')
 
     def svg_halo(self):
         if not self.halo:
             return ""
-        out = []
         op = f' stroke-opacity="{self.halo_opacity}" fill-opacity="{self.halo_opacity}"' if self.halo_opacity else ""
-        for x, y, t, fam, ls in self._runs():
-            lsa = f' letter-spacing="{fmt(ls)}"' if ls else ""
-            out.append(f'<text x="{fmt(x)}" y="{fmt(y)}" font-family="{fam}" font-size="{fmt(self.fs)}"{lsa} '
-                       f'fill="{self.halo}" stroke="{self.halo}" stroke-width="{fmt(self.halo_w)}" '
-                       f'stroke-linejoin="round"{op}>{esc(t)}</text>')
-        return "".join(out)
+        attrs = (f'fill="{self.halo}" stroke="{self.halo}" stroke-width="{fmt(self.halo_w + self.bold)}" '
+                 f'stroke-linejoin="round"{op}')
+        return "".join(self._piece(*r, attrs) for r in self._runs())
+
+    def _fill_attrs(self, col, kind, extra=""):
+        """Fill plus the same-colour fattening stroke (thinner on the heavy 氹)."""
+        b = self.bold if kind != "g" else max(0.0, self.bold - DANG_BOLD_CUT * self.fs)
+        fat = f' stroke="{col}" stroke-width="{fmt(b)}" stroke-linejoin="round"' if b > 0.2 else ""
+        return f'fill="{col}"{fat}{extra}'
 
     def svg_fill(self):
         out = []
         op = f' opacity="{self.opacity}"' if self.opacity else ""
         if self.kind == "district":
             # chunky 3-D letters: a darker copy offset down-right under the face
-            sd = self.fs * 0.045
-            for x, y, t, fam, ls in self._runs():
-                lsa = f' letter-spacing="{fmt(ls)}"' if ls else ""
-                out.append(f'<text x="{fmt(x + sd)}" y="{fmt(y + sd * 1.3)}" font-family="{fam}" '
-                           f'font-size="{fmt(self.fs)}"{lsa} fill="#5e3119">{esc(t)}</text>')
-        for x, y, t, fam, ls in self._runs():
-            lsa = f' letter-spacing="{fmt(ls)}"' if ls else ""
-            out.append(f'<text x="{fmt(x)}" y="{fmt(y)}" font-family="{fam}" font-size="{fmt(self.fs)}"{lsa} '
-                       f'fill="{self.fill}"{op}>{esc(t)}</text>')
+            sd = self.fs * 0.04
+            for k, x, y, t, fam, ls in self._runs():
+                f = 0.7 if k == "g" else 1.0
+                out.append(self._piece(k, x + sd * f, y + sd * 1.3 * f, t, fam, ls,
+                                       self._fill_attrs("#5e3119", k)))
+        for k, x, y, t, fam, ls in self._runs():
+            out.append(self._piece(k, x, y, t, fam, ls, self._fill_attrs(self.fill, k, op)))
         return "".join(out)
 
 
@@ -455,6 +658,36 @@ class IconLib:
     def __init__(self):
         self.defs = {}
         self.missing = set()
+        self.shapes = {}      # name -> {"bbox": [x0,y0,x1,y1], "bands": [[y0,y1,x0,x1], ...]} (160 box)
+
+    def load_shapes(self, path):
+        try:
+            self.shapes = json.loads(Path(path).read_text(encoding="utf-8"))
+        except Exception as exc:
+            log(f"  (icon silhouettes unavailable: {exc}; using rough boxes)")
+            self.shapes = {}
+
+    def rects(self, name, x, y, size, pad=0.0):
+        """Silhouette of icon `name` anchored at (x, y) as an (n, 4) array of px rects."""
+        k = size / 160.0
+        sh = self.shapes.get(name)
+        if not sh:
+            b = icon_box(x, y, size, pad).bounds
+            return np.array([b], float)
+        r = np.array(sh["bands"], float)          # y0, y1, x0, x1 in icon units
+        return np.column_stack([x + (r[:, 2] - 80) * k - pad, y + (r[:, 0] - 148) * k - pad,
+                                x + (r[:, 3] - 80) * k + pad, y + (r[:, 1] - 148) * k + pad])
+
+    def shape(self, name, x, y, size, pad=0.0):
+        rs = self.rects(name, x, y, size, pad)
+        return unary_union([box(*r) for r in rs]).simplify(0.5)
+
+    def extent(self, name, x, y, size):
+        """(left, top, right, bottom) of the icon's opaque part in px."""
+        k = size / 160.0
+        sh = self.shapes.get(name)
+        bx0, by0, bx1, by1 = sh["bbox"] if sh else (5, 10, 155, 150)
+        return x + (bx0 - 80) * k, y + (by0 - 148) * k, x + (bx1 - 80) * k, y + (min(by1, 150) - 148) * k
 
     def has(self, name):
         return (ICONS / f"{name}.svg").exists()
@@ -556,6 +789,27 @@ def icon_box(x, y, size, pad=0.0):
     return box(x - size * 0.47 - pad, y - size * 0.93 - pad, x + size * 0.47 + pad, y + size * 0.06 + pad)
 
 
+def rect_area(a):
+    return float(((a[:, 2] - a[:, 0]) * (a[:, 3] - a[:, 1])).sum())
+
+
+def rect_overlap(a, b):
+    """Total overlap area of two sets of axis-aligned rects (rects within a set don't overlap)."""
+    if len(a) == 0 or len(b) == 0:
+        return 0.0
+    ix = np.minimum(a[:, None, 2], b[None, :, 2]) - np.maximum(a[:, None, 0], b[None, :, 0])
+    iy = np.minimum(a[:, None, 3], b[None, :, 3]) - np.maximum(a[:, None, 1], b[None, :, 1])
+    return float((np.clip(ix, 0, None) * np.clip(iy, 0, None)).sum())
+
+
+def rects_side(r, y0, y1, side):
+    """Rightmost (side>0) / leftmost (side<0) x of the rects that meet the rows y0..y1."""
+    m = (r[:, 3] > y0) & (r[:, 1] < y1)
+    if not m.any():
+        return None
+    return float(r[m, 2].max()) if side > 0 else float(r[m, 0].min())
+
+
 # ---------------------------------------------------------------- data loading
 def load_basemap():
     js = json.loads((DATA / "basemap.geojson").read_text(encoding="utf-8"))
@@ -570,6 +824,20 @@ def load_basemap():
     return {k: unary_union(v) if len(v) > 1 else v[0] for k, v in layers.items()}, bridges
 
 
+def load_detail():
+    """Minor streets and footpaths (data/basemap-detail.geojson), which the real
+    map and the routes use; drawn faintly so routes always run on a drawn way."""
+    p = DATA / "basemap-detail.geojson"
+    if not p.exists():
+        log("  (data/basemap-detail.geojson missing: no lanes or footpaths drawn)")
+        return {}
+    js = json.loads(p.read_text(encoding="utf-8"))
+    out = {}
+    for f in js["features"]:
+        out.setdefault(f["properties"].get("layer"), []).append(shape(f["geometry"]))
+    return {k: unary_union(v) if len(v) > 1 else v[0] for k, v in out.items()}
+
+
 def load_places(spec):
     cands = []
     if spec:
@@ -581,8 +849,8 @@ def load_places(spec):
     places = []
     for fn in cands:
         js = json.loads(Path(fn).read_text(encoding="utf-8"))
-        if isinstance(js, dict):
-            js = js.get("places", [])
+        if isinstance(js, dict):   # data/places.json: {start, end, places: [...]}
+            js = [js.get("start"), js.get("end")] + list(js.get("places", []))
         places.extend(e for e in js if isinstance(e, dict) and "id" in e and "lat" in e)
     seen, out = set(), []
     for e in places:
@@ -684,7 +952,14 @@ class Renderer:
         oth = drop_small(oth.simplify(0.8), 200).difference(mac.buffer(0.3))
         oth = drop_small(oth, 200)
         self.mac, self.oth = mac, oth
-        self.foot = unary_union([mac, affinity.translate(mac, 0, CLIFF_DY)])
+        self.beach = drop_small(area_clean(pg("beach")).intersection(mac), 150).simplify(0.8)
+        # the raised island's cliff shows only over the sea: not over the
+        # neighbouring land (UM campus, the Hengqin port) and not under beaches
+        cliff = affinity.translate(mac, 0, CLIFF_DY).difference(mac).difference(oth)
+        if not self.beach.is_empty:
+            cliff = cliff.difference(self.beach.buffer(30))
+        self.cliff = drop_small(cliff, 4)
+        self.foot = unary_union([mac, self.cliff])
         self.all_land = unary_union([self.foot, oth])
         shapely.prepare(self.all_land)
 
@@ -707,6 +982,13 @@ class Renderer:
         self.districts = {"peninsula": unary_union(pen)}
         for k in dist:
             self.districts[k] = area_clean(unary_union([dist[k]] + extra[k]))
+        # the parish's thin southern tail (石排湾) would read as a stray lavender
+        # strip down Coloane's west side: colour it with Coloane, keep lavender
+        # for the Cotai Strip itself
+        tail = self.districts["cotai"].intersection(box(-200, P(COTAI_SOUTH_LAT, 113.55)[1], W + 200, H + 200))
+        if not tail.is_empty:
+            self.districts["cotai"] = area_clean(self.districts["cotai"].difference(tail))
+            self.districts["coloane"] = area_clean(unary_union([self.districts["coloane"], tail]))
         for k, g in self.districts.items():
             log(f"  district {k}: {g.area / 1e4:.1f} x1e4 px2")
 
@@ -718,30 +1000,38 @@ class Renderer:
         water = area_clean(pg("water"))
         self.water_mac = drop_small(water.intersection(mac), 140).simplify(0.8)
         self.water_oth = drop_small(water.intersection(oth), 400).simplify(1.0)
-        self.beach = drop_small(area_clean(pg("beach")).intersection(mac), 150).simplify(0.8)
         self.beach_oth = drop_small(area_clean(pg("beach")).intersection(oth), 150).simplify(1.0)
         self.airport = area_clean(pg("airport")).intersection(mac).simplify(0.8)
         self.runway = area_clean(pg("runway"))
 
-        # roads
+        # roads: simplified by <= 1 px and corner-capped smoothing (<= ~1.4 px), so
+        # the drawn centrelines stay within ~3 px of the real ones (routes align)
         mac_b = mac.buffer(6)
-        self.road_major = self.prep_roads(pg("road-major"), mac_b, simp=2.2, min_comp=60)
-        self.road_mid = self.prep_roads(pg("road-mid"), mac_b, simp=2.2, min_comp=110)
+        self.road_major = self.prep_roads(pg("road-major"), mac_b, simp=1.0, min_comp=30)
+        self.road_mid = self.prep_roads(pg("road-mid"), mac_b, simp=1.0, min_comp=40)
+        det = load_detail()
+        dg = lambda k: proj_geom(det[k]) if k in det else Polygon()
+        self.road_minor = self.prep_roads(dg("road-minor"), mac_b, simp=1.0, min_comp=20, maxdev=1.2)
+        # footpaths: skip the ones that only shadow a street (separately mapped
+        # pavements, crossings) - those are drawn by the street itself
+        streets = unary_union([l.buffer(5.5, quad_segs=2) for l in self.road_major + self.road_mid + self.road_minor])
+        self.paths = self.prep_roads(dg("path").difference(streets), mac_b, simp=1.0, min_comp=18,
+                                     maxdev=1.2, min_piece=10)
         oth_in = oth.buffer(-3)
-        self.road_oth = self.prep_roads(pg("road-major"), oth_in, simp=3.0, min_comp=160, smooth=1)
-        self.rail = [LineString(chaikin(ls.simplify(1.5).coords, 2))
+        self.road_oth = self.prep_roads(pg("road-major"), oth_in, simp=3.0, min_comp=160, maxdev=3.0)
+        self.rail = [LineString(smooth_capped(ls.simplify(1.0).coords, 2, 1.4))
                      for ls in lines(linemerge(lines(pg("rail").intersection(CLIP)))) if ls.length > 20]
         self.bridges = []
         for name, g in bridges:
             gp = proj_geom(g).intersection(CLIP)
             merged = lines(linemerge(lines(gp)))
-            ls = [LineString(chaikin(l.simplify(1.5).coords, 2)) for l in merged if l.length > 8]
+            ls = [LineString(smooth_capped(l.simplify(1.0).coords, 2, 1.4)) for l in merged if l.length > 8]
             self.bridges.append((name, ls))
         self.bridge_geom = unary_union([l for _, ls in self.bridges for l in ls])
 
-    def prep_roads(self, g, clip, simp, min_comp, smooth=2):
+    def prep_roads(self, g, clip, simp, min_comp, maxdev=1.4, min_piece=1):
         g = g.intersection(clip)
-        ls = [l for l in lines(linemerge(lines(g))) if l.length > 1]
+        ls = [l for l in lines(linemerge(lines(g))) if l.length > min_piece]
         if not ls:
             return []
         # drop tiny disconnected fragments (component length < min_comp)
@@ -756,11 +1046,22 @@ class Renderer:
         out = []
         for i in sorted(keep):
             l = ls[i].simplify(simp)
-            out.append(LineString(chaikin(l.coords, smooth)))
+            out.append(LineString(smooth_capped(l.coords, 2, maxdev)))
         return out
 
     # ------------------------------------------------------------ layout pieces
     def place_icons(self, places):
+        """Landmark icons stand on their attraction's real coordinates.
+
+        Where neighbours are so close that the drawings would pile up (the
+        historic centre, the Cotai resorts) an icon may step aside a little:
+        up to ~32 px (about 100 m) for ordinary sights, and further for the
+        huge resorts, whose buildings really do cover that much ground.  Two
+        rules are kept hard, because the frontend drops its numbered route pin
+        on every true spot: no icon may cover another sight's spot (grown by
+        the pin radius), and every icon keeps its own spot on or within
+        OWN_SPOT_MAX px of its outline.
+        """
         items = []
         for e in places:
             if e["id"] in FERRY_IDS:
@@ -768,53 +1069,127 @@ class Renderer:
             x, y = P(e["lat"], e["lng"])
             if not (0 <= x <= W and 0 <= y <= H):
                 continue
-            base = 128.0 if e["id"] in FAMOUS else 98.0
-            items.append({"e": e, "x": x, "y": y, "base": base, "size": base})
-        # shrink icons in dense clusters
+            pid = e["id"]
+            base = float(ICON_SIZE.get(pid, 132.0 if pid in FAMOUS else 106.0))
+            maxd = 130.0 if pid in RESORTS else (34.0 if pid in FAMOUS else 32.0)
+            items.append({"e": e, "name": pid, "ax": x, "ay": y, "x": x, "y": y,
+                          "base": base, "size": base, "maxd": maxd})
+        # a little smaller where many sights crowd together (not the roomy resorts)
         for it in items:
-            d = min((math.hypot(it["x"] - o["x"], it["y"] - o["y"]) for o in items if o is not it), default=999)
-            near = sum(1 for o in items if o is not it and math.hypot(it["x"] - o["x"], it["y"] - o["y"]) < 150)
-            f = 1.0
-            if d < it["base"] * 0.9:
-                f = max(0.88 if it["e"]["id"] in FAMOUS else 0.78, d / (it["base"] * 0.9))
-            f *= max(0.92, 1 - 0.02 * near)
-            it["size"] = round(it["base"] * f, 1)
+            if it["name"] in RESORTS:
+                continue
+            near = sum(1 for o in items if o is not it and
+                       math.hypot(it["ax"] - o["ax"], it["ay"] - o["ay"]) < 170)
+            lo = 0.9 if it["name"] in FAMOUS else 0.84
+            it["size"] = round(it["base"] * max(lo, 1 - 0.035 * near), 1)
+
+        land = self.mac
+        shapely.prepare(land)
+        spots = [(it["ax"], it["ay"], id(it)) for it in items] + \
+                [(*P(e["lat"], e["lng"]), "ferry") for e in places if e["id"] in FERRY_IDS]
+        rings = [(0.0, 0.0)] + [(r * math.cos(a), r * math.sin(a))
+                                for r in (0.12, 0.24, 0.36, 0.5, 0.64, 0.78, 0.9, 1.0)
+                                for a in np.linspace(0, 2 * math.pi, 24, endpoint=False)]
+
+        def rect_dist(r, px, py):
+            dx = np.maximum(np.maximum(r[:, 0] - px, px - r[:, 2]), 0)
+            dy = np.maximum(np.maximum(r[:, 1] - py, py - r[:, 3]), 0)
+            return float(np.hypot(dx, dy).min())
+
+        order = sorted(items, key=lambda it: (it["name"] not in FAMOUS, -it["size"]))
+        for rnd in range(12):
+            moved = 0
+            for it in order:
+                nb = [o for o in items if o is not it and abs(o["x"] - it["x"]) < 460 and abs(o["y"] - it["y"]) < 460]
+                orects = [self.icons.rects(o["name"], o["x"], o["y"], o["size"], pad=5) for o in nb]
+                nspots = [(sx, sy) for sx, sy, k in spots if k != id(it)
+                          and abs(sx - it["ax"]) < 400 and abs(sy - it["ay"]) < 400]
+                best = None
+                for ux, uy in rings:
+                    dx, dy = ux * it["maxd"], uy * it["maxd"]
+                    x, y = it["ax"] + dx, it["ay"] + dy
+                    r = self.icons.rects(it["name"], x, y, it["size"])
+                    a = rect_area(r)
+                    ov = sum(rect_overlap(r, o) for o in orects) / a
+                    # hard: never cover another sight's true spot (its route pin)
+                    pins = sum(1 for sx, sy in nspots if rect_dist(r, sx, sy) < PIN_R_ICON)
+                    # hard: keep its own spot on / right next to the drawing
+                    own = rect_dist(r, it["ax"], it["ay"])
+                    own_pen = 0.0 if own <= OWN_SPOT_MAX else 4.0 + own / 20
+                    wet = 0 if it["name"] in WATER_OK or shapely.contains_xy(land, x, y - 6) else 1
+                    out = 0 if (r[:, 0].min() > 8 and r[:, 2].max() < W - 8 and r[:, 1].min() > 8) else 1
+                    cost = (ov * 6 + pins * 6 + own_pen + 0.35 * (dx * dx + dy * dy) / it["maxd"] ** 2
+                            + wet * 3 + out * 3)
+                    if best is None or cost < best[0] - 1e-9:
+                        best = (cost, x, y, pins, own)
+                if abs(best[1] - it["x"]) > 0.01 or abs(best[2] - it["y"]) > 0.01:
+                    moved += 1
+                it["x"], it["y"] = best[1], best[2]
+                it["_pins"], it["_own"] = best[3], best[4]
+            if not moved:
+                break
         for it in items:
-            self.obs.add(icon_box(it["x"], it["y"], it["size"]), "icon")
+            d = math.hypot(it["x"] - it["ax"], it["y"] - it["ay"])
+            if d > 1:
+                log(f"  icon {it['name']}: stepped {d:.0f} px aside (own spot {it['_own']:.0f} px from outline)")
+            if it["_pins"]:
+                log(f"  ! icon {it['name']} still covers {it['_pins']} other true spot(s)")
+            self.obs.add(self.icons.shape(it["name"], it["x"], it["y"], it["size"]), "icon")
+            # the frontend drops its numbered route pin on the true spot: keep text off it
+            self.obs.add(Point(it["ax"], it["ay"]).buffer(PIN_R_ICON, quad_segs=4), "pin")
         self.icon_items = items
         return items
 
     def place_ferries(self, places):
+        """Ferry terminals: the name goes right beside the true spot (where the
+        frontend's start / end pin sits) and a ferry is drawn docked in the
+        nearest water, within ~140 px; if no water is that close, no boat."""
         out = []
+        sea_ok = self.foot.buffer(-2)
+        shapely.prepare(sea_ok)
+        others = [(it["ax"], it["ay"]) for it in self.icon_items]
         for e in places:
             if e["id"] not in FERRY_IDS:
                 continue
             tx, ty = P(e["lat"], e["lng"])
-            size = 104.0
+            name = e["id"] if self.icons.has(e["id"]) else "ferry"
+            size = 84.0
             best = None
-            for r in range(60, 460, 12):
-                for k in range(24):
-                    a = 2 * math.pi * k / 24
+            for r in range(34, 141, 6):
+                for k in range(36):
+                    a = 2 * math.pi * k / 36
                     x, y = tx + r * math.cos(a), ty + r * math.sin(a)
-                    b = icon_box(x, y, size, pad=4)
-                    if not CANVAS.contains(b) or self.all_land.intersects(b.buffer(3)):
+                    rs = self.icons.rects(name, x, y, size)
+                    if rs[:, 0].min() < 10 or rs[:, 2].max() > W - 10 or rs[:, 1].min() < 10:
                         continue
-                    if self.bridge_geom.intersects(b.buffer(10)):
+                    # the hull's waterline must be in water (the bow may touch a pier)
+                    if shapely.contains_xy(sea_ok, x, y - 6) or shapely.contains_xy(sea_ok, x - size * 0.3, y - 8) \
+                            or shapely.contains_xy(sea_ok, x + size * 0.3, y - 8):
                         continue
-                    pen = self.obs.overlap(b)
-                    score = r + pen * 0.05
+                    sh = self.icons.shape(name, x, y, size)
+                    if self.bridge_geom.intersects(sh.buffer(6)):
+                        continue
+                    landf = sh.intersection(self.foot).area / sh.area
+                    if landf > 0.35:
+                        continue
+                    pins = sum(1 for ox, oy in others if sh.distance(Point(ox, oy)) < PIN_R_ICON)
+                    ownc = 1 if sh.distance(Point(tx, ty)) < 14 else 0
+                    pen = self.obs.overlap(sh, kinds={"icon", "label"}) / sh.area
+                    score = r + landf * 160 + pen * 300 + pins * 400 + ownc * 60
                     if best is None or score < best[0]:
                         best = (score, x, y)
-                if best and best[0] < r:
-                    break
-            if not best:
-                log(f"  ! no water spot for ferry {e['id']}")
-                continue
-            _, x, y = best
-            ref = self.icons.ref(e["id"]) if self.icons.has(e["id"]) else self.icons.ref("ferry")
-            self.obs.add(icon_box(x, y, size), "icon")
-            out.append({"e": e, "x": x, "y": y, "size": size, "ref": ref, "label": FERRY_IDS[e["id"]],
-                        "tx": tx, "ty": ty})
+            item = {"e": e, "name": name, "x": tx, "y": ty, "size": 0.0, "ref": None, "boat": None,
+                    "label": FERRY_IDS[e["id"]], "tx": tx, "ty": ty, "ax": tx, "ay": ty}
+            if best:
+                _, x, y = best
+                item["boat"] = (x, y, size)
+                item["ref"] = self.icons.ref(name)
+                self.obs.add(self.icons.shape(name, x, y, size), "icon")
+                log(f"  ferry {e['id']}: boat {math.hypot(x - tx, y - ty):.0f} px from the terminal")
+            else:
+                log(f"  ferry {e['id']}: no water within 140 px - name only")
+            self.obs.add(Point(tx, ty).buffer(PIN_R_ICON, quad_segs=4), "pin")
+            out.append(item)
         self.ferries = out
 
     def place_icon_labels(self):
@@ -825,47 +1200,103 @@ class Renderer:
             todo.append((f, f["label"]))
         # famous first, then top-to-bottom
         todo.sort(key=lambda t: (0 if t[0]["e"]["id"] in FAMOUS else 1, t[0]["y"]))
-        anchors = [(it["x"], it["y"] - it["size"] * 0.45, id(it)) for it, _ in todo]
-        icon_boxes = [(icon_box(it["x"], it["y"], it["size"]), id(it),
-                       2.8 if it["e"]["id"] in FAMOUS else 1.5) for it, _ in todo]
+        is_ferry = lambda it: it["e"]["id"] in FERRY_IDS
+
+        def anchor(it):
+            return (it["tx"], it["ty"]) if is_ferry(it) else (it["x"], it["y"] - it["size"] * 0.45)
+
+        anchors = [(*anchor(it), id(it)) for it, _ in todo]
+        icon_boxes = []
+        for it, _ in todo:
+            wt = 2.8 if it["e"]["id"] in FAMOUS else 1.5
+            if is_ferry(it):
+                if it["boat"]:
+                    bx, by, bs = it["boat"]
+                    icon_boxes.append((self.icons.shape(it["name"], bx, by, bs), "boat", 1.5))
+            else:
+                icon_boxes.append((self.icons.shape(it["name"], it["x"], it["y"], it["size"]), id(it), wt))
+        # base strips of every icon: a name just under a neighbour's base reads as that icon's name
+        bases = []
+        for it, _ in todo:
+            if is_ferry(it):
+                continue
+            L_, T_, R_, B_ = self.icons.extent(it["name"], it["x"], it["y"], it["size"])
+            bases.append((box(L_ + 6, B_, R_ - 6, B_ + 30), id(it)))
         static = [o for o, k in self.obs.items if k in ("label", "deco")]
+        # every sight's true spot (its route pin): a hard keep-out for other sights'
+        # names, and a smaller one for its own name so the pin doesn't hide it
+        spots = [(it["ax"], it["ay"], id(it)) for it in self.icon_items] + \
+                [(f["tx"], f["ty"], id(f)) for f in self.ferries]
         entries = []
         for it, text in todo:
-            fs = 42 if it["e"]["id"] in FAMOUS else 38
-            lab = Label(text, it["x"], it["y"], fs, OUTLINE, "#ffffff", 11, kind="icon")
-            x, y, s = it["x"], it["y"], it["size"]
+            fs = 48 if it["e"]["id"] in FAMOUS else 44
+            lab = Label(text, it["x"], it["y"], fs, OUTLINE, "#ffffff", 11, kind="icon", bold=fs * 0.04)
             w, h = lab.w, fs
-            cands = [
-                (0.0, (x, y + 8 + h / 2)),
-                (0.5, (x + w * 0.28, y + 8 + h / 2)),
-                (0.5, (x - w * 0.28, y + 8 + h / 2)),
-                (0.8, (x + s * 0.40 + w / 2 + 4, y - s * 0.30)),
-                (0.8, (x - s * 0.40 - w / 2 - 4, y - s * 0.30)),
-                (1.0, (x + s * 0.40 + w / 2 + 4, y - h * 0.20)),
-                (1.0, (x - s * 0.40 - w / 2 - 4, y - h * 0.20)),
-                (1.4, (x, y - s * 0.95 - h / 2 - 2)),
-                (1.4, (x + s * 0.40 + w / 2 + 4, y - s * 0.62)),
-                (1.4, (x - s * 0.40 - w / 2 - 4, y - s * 0.62)),
-                (2.2, (x, y + 10 + h * 1.5)),
-            ]
+            cands = []
+            if is_ferry(it):
+                tx, ty = it["tx"], it["ty"]
+                g = 31          # just clear of the 40 px terminal pin at z15+
+                cands += [(0.0, (tx, ty + g + h / 2)), (0.15, (tx + g + w / 2, ty)), (0.15, (tx - g - w / 2, ty)),
+                          (0.3, (tx, ty - g - h / 2)), (0.4, (tx + w * 0.3, ty + g + h / 2)),
+                          (0.4, (tx - w * 0.3, ty + g + h / 2)), (0.5, (tx + g + w / 2, ty + h * 0.6)),
+                          (0.5, (tx - g - w / 2, ty + h * 0.6)), (0.5, (tx + g + w / 2, ty - h * 0.6)),
+                          (0.5, (tx - g - w / 2, ty - h * 0.6)), (1.2, (tx, ty + g + h * 1.5))]
+            else:
+                x, y, s = it["x"], it["y"], it["size"]
+                R = self.icons.rects(it["name"], x, y, s)
+                L_, T_, R_, B_ = self.icons.extent(it["name"], x, y, s)
+
+                def side(cy, sgn):
+                    e = rects_side(R, cy - h / 2 - 4, cy + h / 2 + 4, sgn)
+                    e = e if e is not None else x
+                    return e + sgn * (w / 2 + 7)
+
+                below = max(B_ + 5, it["ay"] + 16)
+                for pref, cy in ((0.0, below + h / 2), (2.2, below + 5 + h * 1.5)):
+                    cands.append((pref, (x, cy)))
+                    if pref == 0.0:
+                        cands += [(0.5, (x + w * 0.28, cy)), (0.5, (x - w * 0.28, cy))]
+                for pref, cy in ((0.8, y - s * 0.30), (1.0, y - h * 0.20), (1.4, y - s * 0.62)):
+                    cands += [(pref, (side(cy, 1), cy)), (pref, (side(cy, -1), cy))]
+                cands.append((1.4, (x, T_ - h / 2 - 4)))
             entries.append({"it": it, "lab": lab, "cands": cands, "box": None})
 
         def score(e, cx, cy, others):
             it, lab = e["it"], e["lab"]
             w, h = lab.w, lab.fs
             b = box(cx - w / 2 - 3, cy - h / 2 - 2, cx + w / 2 + 3, cy + h / 2 + 2)
-            bp = box(cx - w / 2 - 14, cy - h / 2 - 5, cx + w / 2 + 14, cy + h / 2 + 5)   # keep a gap
+            bp = box(cx - w / 2 - 14, cy - h / 2 - 9, cx + w / 2 + 14, cy + h / 2 + 9)   # keep a gap
             out = b.area - b.intersection(CANVAS.buffer(-6)).area
             ov_l = sum(bp.intersection(o).area for o in others if o.intersects(bp))
             ov_l += sum(bp.intersection(o).area for o in static if o.intersects(bp))
             ov_i = sum(b.intersection(ib).area * wt for ib, k, wt in icon_boxes if k != id(it) and ib.intersects(b))
+            hard = 0.0
+            near_other = 1e9
+            for sx, sy, k in spots:
+                dd = b.distance(Point(sx, sy))
+                if k == id(it):
+                    if dd < 14:
+                        hard += 0.6          # its own pin would hide part of the name
+                else:
+                    near_other = min(near_other, dd)
+                    if dd < PIN_R_LABEL:
+                        hard += 3.0          # never under another sight's pin
+            # ...and the nearest true spot should be its own
+            own_d = b.distance(Point(it["ax"], it["ay"]))
+            if near_other < own_d - 4:
+                hard += 0.5
+            under = sum(1 for bb, k in bases if k != id(it) and bb.intersects(b))
+            hard += 0.6 * under
             # association: the label should be nearer its own icon than any other
-            own = math.hypot(cx - it["x"], cy - (it["y"] - it["size"] * 0.45))
+            ax_, ay_ = anchor(it)
+            own = math.hypot(cx - ax_, cy - ay_)
             near = min((math.hypot(cx - ax, cy - ay) for ax, ay, k in anchors if k != id(it)), default=1e9)
             assoc = 0.0 if own <= near * 0.95 else min(1.0, (own - near * 0.95) / 60.0)
-            return (ov_l * 3.0 + ov_i + out * 5) / b.area + assoc * 0.9, b
+            # ...and, all else equal, sit on the side facing away from the neighbours
+            soft = max(0.0, own / max(near, 1.0) - 0.55) * 0.25
+            return (ov_l * 3.0 + ov_i + out * 5) / b.area + assoc * 0.9 + soft + hard, b
 
-        for rnd in range(4):
+        for rnd in range(5):
             changed = False
             for e in entries:
                 others = [o["box"] for o in entries if o is not e and o["box"] is not None]
@@ -877,13 +1308,15 @@ class Renderer:
                         best = (sc, cx, cy, b)
                 if e["box"] is None or not best[3].equals(e["box"]):
                     changed = True
-                e["box"], e["pos"] = best[3], (best[1], best[2])
+                e["box"], e["pos"], e["score"] = best[3], (best[1], best[2]), best[0]
             if not changed:
                 break
         for e in entries:
             lab = e["lab"]
             cx, cy = e["pos"]
             lab.move(cx - lab.cx, cy - lab.cy)
+            if e["score"] > 2.5:
+                log(f"  ! label {lab.text}: no clean spot (score {e['score']:.2f})")
             self.obs.add(e["box"], "label")
             self.labels["icon"].append(lab)
 
@@ -895,9 +1328,10 @@ class Renderer:
             key = names.get(lb["text"])
             region = self.districts.get(key) if key else self.mac
             x0, y0 = P(lb["lat"], lb["lng"])
-            fs = 128 if len(lb["text"]) > 2 else 140
-            lab = Label(lb["text"], x0, y0, fs, "#a15a32", "#ffffff", 22, fam="qingke", ls=fs * 0.18,
-                        kind="district")
+            fs = 112 if len(lb["text"]) > 2 else 120
+            # chunky ZCOOL KuaiLe (fattened with a same-colour stroke); its 氹 is composed
+            lab = Label(lb["text"], x0, y0, fs, "#a15a32", "#ffffff", 20, fam="kuaile", ls=fs * 0.07,
+                        kind="district", bold=fs * 0.05)
             w, h = lab.w, fs
             best = None
             for dx in range(-640, 641, 24):
@@ -910,8 +1344,10 @@ class Renderer:
                     if not CANVAS.buffer(-10).contains(b):
                         continue
                     outside = b.area - b.intersection(region).area
-                    ov = self.obs.overlap(b, kinds={"icon", "label"})
-                    score = (ov * 4 + outside * 2.0) / b.area + d / 640 * 0.35
+                    ov = self.obs.overlap(b, kinds={"icon", "label", "pin", "summit"})
+                    # prefer open space: things within ~45 px of the label count a little too
+                    ov_near = self.obs.overlap(b.buffer(60, join_style=2), kinds={"icon", "label"}) - ov
+                    score = (ov * 4 + ov_near * 2.0 + outside * 2.0) / b.area + d / 640 * 0.3
                     if best is None or score < best[0]:
                         best = (score, cx, cy, b)
             if best is None:
@@ -928,77 +1364,85 @@ class Renderer:
         if dx or dy:
             lab.move(dx, dy)
 
-    def try_place(self, lab, kinds=("icon", "label"), max_frac=0.12, nudges=None, register=True):
+    def try_place(self, lab, kinds=("icon", "label", "pin"), max_frac=0.12, nudges=None, register=True,
+                  land=False):
+        """First nudge that is clear enough; with land=True (water names) the
+        least-on-land of the clear nudges wins instead."""
         self.fit_inside(lab)
         nudges = nudges or [(0, 0), (0, 30), (0, -30), (30, 0), (-30, 0), (0, 60), (0, -60),
                             (60, 0), (-60, 0), (40, 40), (-40, 40), (40, -40), (-40, -40)]
         base = (lab.cx, lab.cy)
-        for dx, dy in nudges:
+        best = None
+        for i, (dx, dy) in enumerate(nudges):
             lab.move(base[0] + dx - lab.cx, base[1] + dy - lab.cy)
             self.fit_inside(lab)
             b = lab.box.buffer(3, join_style=2)
             ov = self.obs.overlap(b, kinds=set(kinds))
             if ov <= max_frac * b.area:
-                if register:
-                    self.obs.add(b, "label")
-                return True
-        return False
+                if not land:
+                    best = (0, lab.cx, lab.cy)
+                    break
+                lf = b.intersection(self.all_land).area / b.area + i * 0.004
+                if best is None or lf < best[0]:
+                    best = (lf, lab.cx, lab.cy)
+        if best is None:
+            return False
+        lab.move(best[1] - lab.cx, best[2] - lab.cy)
+        if register:
+            self.obs.add(lab.box.buffer(3, join_style=2), "label")
+        return True
 
     def place_other_labels(self, labels):
         for lb in labels:
-            t, text = lb["type"], lb["text"]
+            t, text = lb["type"], LABEL_ALIAS.get(lb["text"], lb["text"])
             x, y = P(lb["lat"], lb["lng"])
             if t == "region":
                 continue
             if t in ("water", "sea"):
-                mn = lb.get("min", 13)
                 if text.endswith("水库"):
-                    fs, ls = 32, 3
-                elif t == "sea":
-                    fs, ls = 76, 22
+                    continue            # reservoirs: nothing a visitor needs
+                mn = lb.get("min", 13)
+                if t == "sea":
+                    fs, ls = 62, 14
                 else:
-                    fs, ls = {12: 76, 13: 66, 14: 56}.get(mn, 46), {12: 22, 13: 16, 14: 12}.get(mn, 8)
-                lab = Label(text, x, y, fs, "#1d6f99", "#ffffff", max(8, fs * 0.2), ls=ls,
-                            angle=lb.get("angle"), kind="water", halo_opacity=0.85)
+                    fs, ls = {12: 60, 13: 52, 14: 48}.get(mn, 44), 8
+                mk = lambda **kw: Label(text, x, y, fs, "#3b8dbb", "#ffffff", max(8, fs * 0.2), kind="water",
+                                        halo_opacity=0.7, **kw)
+                lab = mk(ls=ls, angle=lb.get("angle"))
                 # narrow channel: stack vertically if the straight run would sit on land
-                if lab.angle is None and t == "water" and not text.endswith("水库"):
+                if lab.angle is None and t == "water":
                     land_frac = lab.box.intersection(self.all_land).area / lab.box.area
                     if land_frac > 0.25:
-                        lab2 = Label(text, x, y, fs, "#1d6f99", "#ffffff", max(8, fs * 0.2), ls=ls * 0.5,
-                                     angle=90, kind="water", halo_opacity=0.85)
+                        lab2 = mk(ls=ls * 0.5, angle=90)
                         if lab2.box.intersection(self.all_land).area / lab2.box.area < land_frac:
                             lab = lab2
-                if self.try_place(lab, max_frac=0.10):
+                if self.try_place(lab, max_frac=0.10, land=t == "water"):
                     self.labels["water"].append(lab)
             elif t == "bridge":
                 lab = self.bridge_label(text, x, y, lb.get("angle"))
                 if lab is not None:
                     self.labels["bridge"].append(lab)
             elif t == "landmark":
-                lab = Label(text, x, y, 36, "#5a3d7a", "#ffffff", 10, ls=1, kind="landmark")
+                lab = Label(text, x, y, 40, "#5a3d7a", "#ffffff", 10, ls=1, kind="landmark", bold=1.2)
                 if self.try_place(lab, max_frac=0.10):
                     self.labels["landmark"].append(lab)
             elif t == "hill":
                 name, _, height = text.partition(" ")
-                lab = Label(name, x, y + 34, 32, "#2c6a43", "#ffffff", 9, ls=2, kind="hill")
+                lab = Label(name, x, y + 36, 36, "#2c6a43", "#ffffff", 9, ls=2, kind="hill", bold=1.0)
                 near_icon = any(math.hypot(it["x"] - x, it["y"] - y) < 75 for it in self.icon_items)
                 ok = (not near_icon) and self.try_place(
                     lab, max_frac=0.10, nudges=[(0, 0), (0, 26), (26, 0), (-26, 0), (0, 50)])
                 if ok:
                     self.labels["hill"].append(lab)
-                    if height:
-                        sub = Label(height, lab.cx, lab.cy + 30, 22, "#2c6a43", "#ffffff", 7, kind="hill")
-                        self.obs.add(sub.box.buffer(2), "label")
-                        self.labels["hill"].append(sub)
                 self.hills.append({"text": name, "x": x, "y": y, "h": float(height.rstrip("m") or 60),
                                    "labelled": ok})
 
     def bridge_label(self, text, x, y, angle):
         """Name beside the bridge (not on it), on the visible over-water part."""
         segs = [l for name, ls in self.bridges if name == text for l in ls]
-        fs = 34
+        fs = 32
         if not segs:
-            lab = Label(text, x, y, fs, "#3f5f7f", "#ffffff", 9, ls=2, angle=angle, kind="bridge")
+            lab = Label(text, x, y, fs, BRIDGE_TEXT, "#ffffff", 9, ls=2, angle=angle, kind="bridge")
             return lab if self.try_place(lab, max_frac=0.10) else None
         g = unary_union(segs)
         vis = g.intersection(CANVAS.buffer(-170)).difference(self.foot.buffer(30))
@@ -1023,14 +1467,14 @@ class Renderer:
             for side in (1, -1):
                 off = 8.5 + 7 + fs * 0.5
                 cx, cy = q.x - uy * off * side, q.y + ux * off * side
-                lab = Label(text, cx, cy, fs, "#3f5f7f", "#ffffff", 9, ls=2, angle=ang, kind="bridge")
+                lab = Label(text, cx, cy, fs, BRIDGE_TEXT, "#ffffff", 9, ls=2, angle=ang, kind="bridge")
                 bb = lab.box
                 if not CANVAS.buffer(-12).contains(bb):
                     continue
-                ov = self.obs.overlap(bb.buffer(3), kinds={"icon", "label", "deco"}) / bb.area
+                ov = self.obs.overlap(bb.buffer(3), kinds={"icon", "label", "deco", "pin"}) / bb.area
                 land = sum(gl.intersection(bb).area for gl in [self.all_land]) / bb.area
                 onbridge = g.buffer(8).intersection(bb).area / bb.area
-                sc = ov * 3 + land * 0.6 + onbridge * 2 + abs(along) / 260 + (0.05 if side < 0 else 0)
+                sc = ov * 3 + land * 2.0 + onbridge * 2 + abs(along) / 260 + (0.05 if side < 0 else 0)
                 if best is None or sc < best[0]:
                     best = (sc, lab)
         if best is None or best[0] > 1.5:
@@ -1045,7 +1489,7 @@ class Renderer:
                 continue
             x0, y0 = P(lb["lat"], lb["lng"])
             # the neighbour polygon nearest to the original point, inside the canvas
-            avail = self.oth.intersection(CANVAS.buffer(-30))
+            avail = self.oth.intersection(CANVAS.buffer(-130))
             cand = [p for p in polys(avail) if p.area > 20000]
             if not cand:
                 continue
@@ -1088,8 +1532,13 @@ class Renderer:
         L = 500 * px_per_m(lat)
         self.scalebar = (2790 - L / 2, 3990, L)
         self.obs.add(box(2790 - L / 2 - 30, 3930, 2790 + L / 2 + 60, 4030), "deco")
+        # title ribbon in the open north-east sea (clear of the frontend's
+        # top-right tool buttons at the start-up view, and of every feature)
+        self.banner = self.make_banner(MAP_TITLE, 2290, 1010, 78) if MAP_TITLE else None
+        if self.banner:
+            self.obs.add(self.banner["box"], "deco")
         # clouds
-        self.clouds = [(2760, 330, 300), (290, 4000, 280)]
+        self.clouds = [(2790, 300, 280), (290, 4000, 280)]
         for x, y, s in self.clouds:
             self.obs.add(box(x - s / 2, y - s * 0.6, x + s / 2, y + s * 0.15), "deco")
 
@@ -1150,49 +1599,180 @@ class Renderer:
                 self.stand.append((spot[1], self.icons.use(ref, spot[0], spot[1], size)))
                 self.obs.add(icon_box(spot[0], spot[1], size), "icon")
 
+    def make_banner(self, text, cx, cy, fs):
+        lab = Label(text, cx, cy - 4, fs, "#c8372d", "#ffffff", 14, ls=fs * 0.08, kind="deco", bold=fs * 0.035)
+        w = lab.w + 90
+        h = fs * 1.3
+        x0, x1, y0, y1 = cx - w / 2, cx + w / 2, cy - h / 2, cy + h / 2
+        return {"lab": lab, "x0": x0, "x1": x1, "y0": y0, "y1": y1, "cx": cx,
+                "box": box(x0 - 80, y0 - 30, x1 + 80, y1 + 34)}
+
+    def banner_svg(self):
+        b = self.banner
+        x0, x1, y0, y1, cx = b["x0"], b["x1"], b["y0"], b["y1"], b["cx"]
+        arch, drop, tail = 20, 24, 78
+        o = f'stroke="{OUTLINE}" stroke-width="5" stroke-linejoin="round"'
+        out = []
+        for sgn, xe in ((-1, x0), (1, x1)):
+            xi = xe - sgn * 26          # where the tail tucks under the band
+            xt = xe + sgn * tail        # swallow-tail tip
+            ym = (y0 + y1) / 2 + drop
+            out.append(f'<path d="M{fmt(xi)},{fmt(y0 + drop)} L{fmt(xt)},{fmt(y0 + drop)} L{fmt(xt - sgn * 26)},{fmt(ym)} '
+                       f'L{fmt(xt)},{fmt(y1 + drop)} L{fmt(xi)},{fmt(y1 + drop)} Z" fill="#e0512b" {o}/>')
+            out.append(f'<path d="M{fmt(xe)},{fmt(y1)} L{fmt(xi)},{fmt(y1 + drop)} L{fmt(xi)},{fmt(y1)} Z" '
+                       f'fill="#c8372d" {o}/>')
+        out.append(f'<path d="M{fmt(x0)},{fmt(y0)} Q{fmt(cx)},{fmt(y0 - arch)} {fmt(x1)},{fmt(y0)} L{fmt(x1)},{fmt(y1)} '
+                   f'Q{fmt(cx)},{fmt(y1 - arch)} {fmt(x0)},{fmt(y1)} Z" fill="#fff6e3" {o}/>')
+        out.append(f'<path d="M{fmt(x0 + 14)},{fmt(y0 + 12)} Q{fmt(cx)},{fmt(y0 - arch + 12)} {fmt(x1 - 14)},{fmt(y0 + 12)}" '
+                   f'fill="none" stroke="#f2c14e" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 12"/>')
+        lab = b["lab"]
+        return "".join(out) + lab.svg_halo() + lab.svg_fill()
+
     def add_stand(self, name, x, y, size, kind="deco"):
         ref = self.icons.ref(name)
         self.stand.append((y, self.icons.use(ref, x, y, size)))
         self.obs.add(icon_box(x, y, size), "icon")
 
     # ------------------------------------------------------------ trees / waves
+    def value_noise(self, cell=280, seed=7):
+        """Smooth seeded noise in 0..1 (bilinear value noise), for open meadows."""
+        rng = np.random.default_rng(SEED + seed)
+        gw, gh = int(W / cell) + 3, int(H / cell) + 3
+        g = rng.random((gh, gw))
+
+        def f(x, y):
+            fx, fy = x / cell, y / cell
+            ix, iy = int(fx), int(fy)
+            tx, ty = fx - ix, fy - iy
+            tx, ty = tx * tx * (3 - 2 * tx), ty * ty * (3 - 2 * ty)
+            a = g[iy, ix] * (1 - tx) + g[iy, ix + 1] * tx
+            b = g[iy + 1, ix] * (1 - tx) + g[iy + 1, ix + 1] * tx
+            return a * (1 - ty) + b * ty
+        return f
+
     def plant_trees(self):
+        """Fewer, bigger trees: parks and hills get a loose forest with open
+        meadows and bare hilltops; palms by the beaches and in rows along the
+        Cotai boulevards; a few clumps in Cotai's empty blocks."""
         t0 = time.time()
-        region = self.park.buffer(-8)
         roads = unary_union([l.buffer(13, quad_segs=2) for l in self.road_major] +
                             [l.buffer(9, quad_segs=2) for l in self.road_mid] +
+                            [l.buffer(7, quad_segs=2) for l in self.road_minor] +
+                            [l.buffer(6, quad_segs=2) for l in self.paths] +
                             [l.buffer(10, quad_segs=2) for l in self.rail])
-        excl = [roads, self.water_mac.buffer(6), self.beach.buffer(4), self.airport.buffer(8)]
+        excl = [roads, self.water_mac.buffer(8), self.beach.buffer(6), self.airport.buffer(10)]
         for o, k in self.obs.items:
             minx, miny, maxx, maxy = o.bounds
             if k == "icon":
-                excl.append(box(minx - 14, miny + 10, maxx + 14, maxy + 30))
+                excl.append(box(minx - 18, miny + 10, maxx + 18, maxy + 40))
             elif k in ("label", "deco"):
-                excl.append(box(minx - 10, miny - 4, maxx + 10, maxy + 30))
-        for h in self.hills:
-            if h["labelled"]:
-                excl.append(Point(h["x"], h["y"]).buffer(16))
+                excl.append(box(minx - 12, miny - 6, maxx + 12, maxy + 44))
+            elif k == "pin":
+                excl.append(o.buffer(6))
+        hill_pts = [(h["x"], h["y"], 70 + h["h"] * 0.75) for h in self.hills]
+        for hx, hy, hr in hill_pts:          # bare summits so the mounds read as hills
+            excl.append(Point(hx, hy).buffer(hr * 0.45))
         exclude = unary_union(excl)
-        pts = poisson(region, 24, self.rng, density=50, exclude=exclude)
-        beach_near = self.beach.buffer(110)
-        shapely.prepare(beach_near)
-        hill_pts = [(h["x"], h["y"], 60 + h["h"] * 0.9) for h in self.hills]
+        noise = self.value_noise()
         refs = {k: self.icons.ref(k, fallback=self.icons.builtin(k)) for k in ("tree-round", "tree-pine", "tree-palm")}
         n = {"tree-round": 0, "tree-pine": 0, "tree-palm": 0}
-        for x, y in pts:
+        beach_near = self.beach.buffer(120)
+        shapely.prepare(beach_near)
+        placed = []
+
+        def put(kind, x, y, size):
+            n[kind] += 1
+            placed.append((x, y))
+            self.stand.append((y, self.icons.use(refs[kind], x, y, size)))
+
+        # parks / forest
+        for x, y in poisson(self.park.buffer(-10), 42, self.rng, density=40, exclude=exclude):
+            if noise(x, y) < 0.3:
+                continue                       # an open meadow
             r = self.prng.random()
-            on_hill = any(math.hypot(x - hx, y - hy) < hr for hx, hy, hr in hill_pts)
-            if shapely.contains_xy(beach_near, x, y) and r < 0.75:
+            on_hill = any(math.hypot(x - hx, y - hy) < hr * 1.15 for hx, hy, hr in hill_pts)
+            if shapely.contains_xy(beach_near, x, y) and r < 0.7:
                 kind = "tree-palm"
-            elif (on_hill and r < 0.55) or r < 0.22:
+            elif (on_hill and r < 0.6) or r < 0.1:
                 kind = "tree-pine"
             else:
                 kind = "tree-round"
-            size = self.prng.uniform(27, 36)
-            n[kind] += 1
-            self.stand.append((y, self.icons.use(refs[kind], x, y, size)))
+            put(kind, x, y, self.prng.uniform(40, 52))
+        self.stats["forest"] = sum(n.values())
+
+        # palm rows along the Cotai Strip's boulevards
+        cotai = self.districts.get("cotai", Polygon()).difference(self.airport.buffer(20))
+        shapely.prepare(cotai)
+        shapely.prepare(exclude)
+        rows = []
+        for l in self.road_major:
+            if not l.intersects(cotai):
+                continue
+            for t in np.arange(30, l.length - 30, 58):
+                p, q = l.interpolate(t), l.interpolate(min(l.length, t + 2))
+                dx, dy = q.x - p.x, q.y - p.y
+                d = math.hypot(dx, dy) or 1
+                for sgn in (1, -1):
+                    x, y = p.x - dy / d * 20 * sgn, p.y + dx / d * 20 * sgn
+                    rows.append((x, y))
+        for x, y in rows:
+            if not shapely.contains_xy(cotai, x, y) or shapely.contains_xy(exclude, x, y):
+                continue
+            if any((x - px) ** 2 + (y - py) ** 2 < 36 ** 2 for px, py in placed[-400:]):
+                continue
+            put("tree-palm", x, y, 44)
+        # a few round-tree clumps in Cotai's big empty blocks
+        open_ = cotai.difference(exclude).buffer(-34)
+        for x, y in poisson(open_, 46, self.rng, density=30):
+            if noise(x + 1000, y) < 0.55:
+                continue
+            put("tree-round", x, y, self.prng.uniform(40, 50))
         self.stats["trees"] = n
-        log(f"  trees: {len(pts)} {n} ({time.time() - t0:.1f}s)")
+        log(f"  trees: {sum(n.values())} {n} ({time.time() - t0:.1f}s)")
+
+    def sea_rings(self, d, step=6.0):
+        """Ripple line `d` px off every coast, rounded, and left out wherever the
+        opposite shore is close (narrow channels get just the shallow band)."""
+        al = self.all_land
+        ring = al.buffer(d + 20, quad_segs=8).buffer(-20, quad_segs=8)
+        ls = [l.simplify(1.2) for l in lines(ring.boundary.intersection(CANVAS.buffer(-8))) if l.length > 60]
+        if not ls:
+            return []
+        # nearest-shore lookup through small pieces of the coastline
+        chunks = []
+        for c in lines(al.boundary):
+            cs = list(c.coords)
+            for i in range(0, len(cs) - 1, 24):
+                seg = cs[i:i + 25]
+                if len(seg) > 1:
+                    chunks.append(LineString(seg))
+        tree = STRtree(chunks)
+        carr = np.array(chunks, dtype=object)
+        reach = d * 1.2 + 60
+        res = []
+        for l in ls:
+            ts = np.arange(0, l.length, step)
+            pts = shapely.line_interpolate_point(l, ts)
+            near = shapely.shortest_line(pts, carr[tree.nearest(pts)])
+            xy = shapely.get_coordinates(near).reshape(-1, 2, 2)
+            v = xy[:, 0] - xy[:, 1]
+            u = v / np.maximum(np.hypot(v[:, 0], v[:, 1]), 1e-6)[:, None]
+            rays = shapely.linestrings(np.stack([xy[:, 0] + u * 3, xy[:, 0] + u * reach], axis=1))
+            keep = ~shapely.intersects(rays, al)      # no opposite shore within reach
+            runs, run = [], []
+            for ok, t in zip(keep.tolist(), ts.tolist()):
+                if ok:
+                    run.append(t)
+                elif run:
+                    runs.append(run)
+                    run = []
+            if run:
+                runs.append(run)
+            for r in runs:
+                if len(r) > 1 and r[-1] - r[0] >= 90:
+                    piece = substring(l, r[0], r[-1])
+                    res.append(LineString(chaikin(piece.coords, 2)) if len(piece.coords) > 2 else piece)
+        return res
 
     def scatter_waves(self):
         region = CANVAS.buffer(-40).difference(self.all_land.buffer(115))
@@ -1214,6 +1794,9 @@ class Renderer:
         self.place_icons(places)
         self.place_ferries(places)
         self.place_icon_labels()
+        for lb in labels_json:      # keep the big district names off the hill summits
+            if lb["type"] == "hill":
+                self.obs.add(Point(*P(lb["lat"], lb["lng"])).buffer(30), "summit")
         self.place_district_labels(labels_json)
         self.place_deco()
         self.place_other_labels(labels_json)
@@ -1223,7 +1806,9 @@ class Renderer:
             ref = self.icons.ref(it["e"]["id"])
             self.stand.append((it["y"], self.icons.use(ref, it["x"], it["y"], it["size"])))
         for f in self.ferries:
-            self.stand.append((f["y"], self.icons.use(f["ref"], f["x"], f["y"], f["size"])))
+            if f["boat"]:
+                bx, by, bs = f["boat"]
+                self.stand.append((by, self.icons.use(f["ref"], bx, by, bs)))
         waves = self.scatter_waves()
 
         mac_d = poly_d(self.mac)
@@ -1232,10 +1817,9 @@ class Renderer:
 
         # ---- sea, shallows, ripples, foam
         a.append(f'<rect width="{W}" height="{H}" fill="{SEA}"/>')
-        for d, op, sw in ((150, 0.30, 3.5), (100, 0.45, 4), (62, 0.65, 4.5)):
-            ring = al.buffer(d, quad_segs=8).simplify(1.5)
-            a.append(f'<path d="{poly_d(ring)}" fill="none" stroke="{RIPPLE}" stroke-width="{sw}" '
-                     f'stroke-opacity="{op}" stroke-linejoin="round"/>')
+        for d, op in ((100, 0.38), (62, 0.5)):
+            a.append(f'<path d="{line_d(self.sea_rings(d))}" fill="none" stroke="#ffffff" stroke-width="4" '
+                     f'stroke-opacity="{op}" stroke-dasharray="28 20" stroke-linecap="round" stroke-linejoin="round"/>')
         shallow = al.buffer(38, quad_segs=8).simplify(1.2)
         a.append(f'<path d="{poly_d(shallow)}" fill="{SHALLOW}" fill-rule="evenodd"/>')
         a.append(f'<path d="{poly_d(al.buffer(22, quad_segs=6).simplify(1.0))}" fill="none" stroke="#b3e6f3" '
@@ -1245,6 +1829,7 @@ class Renderer:
         foam_mac = foot.buffer(10, quad_segs=6).simplify(0.8)
         a.append(f'<path d="{poly_d(foam_oth)}" fill="{FOAM}" fill-opacity="0.75" fill-rule="evenodd"/>')
         a.append(f'<path d="{poly_d(foam_mac)}" fill="{FOAM}" fill-rule="evenodd"/>')
+        a.append("<!--BRIDGE_SHADOW-->")
 
         # ---- neighbour land (Zhuhai / Hengqin): muted context
         a.append(f'<path d="{poly_d(self.oth)}" fill="{OTHER_FILL}" stroke="{OTHER_EDGE}" stroke-width="2.5" '
@@ -1256,9 +1841,8 @@ class Renderer:
         a.append(f'<path d="{line_d(self.road_oth)}" fill="none" stroke="{OTHER_ROAD}" stroke-width="6" '
                  f'stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.9"/>')
 
-        # ---- Macau: raised diorama island
-        cliff = affinity.translate(self.mac, 0, CLIFF_DY)
-        a.append(f'<path d="{poly_d(cliff)}" fill="{CLIFF}" stroke="{LAND_EDGE}" stroke-width="3.5" '
+        # ---- Macau: raised diorama island (cliff only over the sea, never under beaches)
+        a.append(f'<path d="{poly_d(self.cliff)}" fill="{CLIFF}" stroke="{LAND_EDGE}" stroke-width="3.5" '
                  f'stroke-linejoin="round" fill-rule="evenodd"/>')
         for k in ("peninsula", "taipa", "cotai", "coloane"):
             g = self.districts.get(k)
@@ -1277,8 +1861,14 @@ class Renderer:
         # ---- areas on Macau land
         if not self.airport.is_empty:
             a.append(f'<path d="{poly_d(self.airport)}" fill="{AIRPORT}" fill-rule="evenodd"/>')
+        beach_draw = Polygon()
         if not self.beach.is_empty:
-            a.append(f'<path d="{poly_d(self.beach)}" fill="url(#sand)" stroke="#e5c27c" stroke-width="2.5" '
+            # the sand reaches ~7 px past the coastline into the surf (still well inside
+            # alignment tolerance) so a beach reads as a beach, not a cliff edge
+            other_land = self.mac.difference(self.beach.buffer(1))
+            beach_draw = unary_union([self.beach, self.beach.buffer(7, quad_segs=4).difference(other_land)])
+            beach_draw = drop_small(beach_draw, 150)
+            a.append(f'<path d="{poly_d(beach_draw)}" fill="url(#sand)" stroke="#e5c27c" stroke-width="2.5" '
                      f'stroke-linejoin="round" fill-rule="evenodd"/>')
         a.append(f'<path d="{poly_d(self.park)}" fill="{PARK}" stroke="{PARK_EDGE}" stroke-width="3.5" '
                  f'stroke-linejoin="round" fill-rule="evenodd"/>')
@@ -1289,26 +1879,46 @@ class Renderer:
             deep = drop_small(self.water_mac.buffer(-6), 60)
             if not deep.is_empty:
                 a.append(f'<path d="{poly_d(deep)}" fill="{SEA}" fill-rule="evenodd"/>')
-        a.append(f'<path d="{mac_d}" fill="none" stroke="{LAND_EDGE}" stroke-width="3.5" stroke-linejoin="round"/>')
+        coast = self.mac.boundary
+        if not beach_draw.is_empty:
+            coast = coast.difference(beach_draw.buffer(2))
+        a.append(f'<path d="{line_d(coast)}" fill="none" stroke="{LAND_EDGE}" stroke-width="3.5" '
+                 f'stroke-linejoin="round" stroke-linecap="round"/>')
+        if not beach_draw.is_empty:
+            # white scalloped surf line just off each beach
+            surf = beach_draw.buffer(9, quad_segs=6).boundary.difference(self.mac.buffer(6))
+            surf = [l for l in lines(surf) if l.length > 30]
+            a.append(f'<path d="{line_d(surf)}" fill="none" stroke="#ffffff" stroke-width="5" '
+                     f'stroke-dasharray="14 10" stroke-linecap="round"/>')
 
         # ---- runway
         a.append(self.runway_svg())
 
-        # ---- roads
+        # ---- roads: footpaths (dots) < lanes < mid roads < main roads
         mid_d, maj_d = line_d(self.road_mid), line_d(self.road_major)
         rc = 'fill="none" stroke-linecap="round" stroke-linejoin="round"'
-        a.append(f'<path d="{mid_d}" {rc} stroke="{ROAD_EDGE}" stroke-width="10"/>')
-        a.append(f'<path d="{maj_d}" {rc} stroke="{ROAD_EDGE}" stroke-width="15"/>')
-        a.append(f'<path d="{mid_d}" {rc} stroke="{ROAD_FILL}" stroke-width="5.5"/>')
-        a.append(f'<path d="{maj_d}" {rc} stroke="{ROAD_FILL}" stroke-width="9.5"/>')
+        a.append(f'<path d="{line_d(self.paths)}" {rc} stroke="{PATH_DOT}" stroke-width="3.4" '
+                 f'stroke-dasharray="0.1 7.5" stroke-opacity="0.95"/>')
+        a.append(f'<path d="{line_d(self.road_minor)}" {rc} stroke="{LANE_FILL}" stroke-width="3.4" stroke-opacity="0.9"/>')
+        a.append(f'<path d="{mid_d}" {rc} stroke="{LANE_FILL}" stroke-width="5.5"/>')
+        a.append(f'<path d="{maj_d}" {rc} stroke="{ROAD_EDGE}" stroke-width="13"/>')
+        a.append(f'<path d="{maj_d}" {rc} stroke="{ROAD_FILL}" stroke-width="10"/>')
 
-        # ---- bridges
+        # ---- bridges (their shadow went in under the land, see BRIDGE_SHADOW)
         a.append(self.bridges_svg())
+        a[a.index("<!--BRIDGE_SHADOW-->")] = self.bridge_shadow
 
         # ---- LRT
         rail_d = line_d(self.rail)
         a.append(f'<path d="{rail_d}" {rc} stroke="#ffffff" stroke-width="11"/>')
         a.append(f'<path d="{rail_d}" fill="none" stroke="{RAIL}" stroke-width="5.5" stroke-dasharray="16 9"/>')
+
+        # ---- soft edge: neighbour land and water fade into the sea colour at the
+        # picture's border, so panning past it shows no hard false coastline
+        a.append(self.edge_fade_svg())
+
+        # ---- cream plazas under the landmarks, so they sit on a little stage
+        a.append(self.plazas_svg())
 
         # ---- standing objects (trees, landmarks, boats...) sorted by ground y
         self.stand.sort(key=lambda t: t[0])
@@ -1326,6 +1936,8 @@ class Renderer:
             a.append(self.icons.use(ref, x, y, s, opacity=0.95))
         a.append(self.compass_svg())
         a.append(self.scalebar_svg())
+        if self.banner:
+            a.append(self.banner_svg())
 
         defs = self.defs_svg(mac_d)
         return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
@@ -1343,24 +1955,52 @@ class Renderer:
                   '<stop offset="0" stop-color="#e9f7c9" stop-opacity="0.85"/>'
                   '<stop offset="0.55" stop-color="#b6e09a" stop-opacity="0.55"/>'
                   '<stop offset="1" stop-color="#5f9f55" stop-opacity="0"/></radialGradient>')
-        clip = f'<clipPath id="macclip"><path d="{mac_d}" fill-rule="evenodd"/></clipPath>'
+        clip = (f'<clipPath id="macclip"><path d="{mac_d}" fill-rule="evenodd"/></clipPath>'
+                f'<clipPath id="parkclip"><path d="{poly_d(self.park)}" fill-rule="evenodd"/></clipPath>')
+        hill_g += ('<radialGradient id="moundshade" cx="0.5" cy="0.5" r="0.5">'
+                   '<stop offset="0.55" stop-color="#3f8f5a" stop-opacity="0.16"/>'
+                   '<stop offset="1" stop-color="#3f8f5a" stop-opacity="0"/></radialGradient>')
         return clip + wave + sand + hill_g + "".join(self.icons.defs.values())
 
     def hill_mounds(self):
-        out = []
+        out, marks = [], []
         for h in self.hills:
             r = 70 + h["h"] * 0.75
             x, y = h["x"], h["y"]
-            out.append(f'<ellipse cx="{fmt(x)}" cy="{fmt(y + r * 0.12)}" rx="{fmt(r * 1.05)}" ry="{fmt(r * 0.8)}" '
-                       f'fill="#6aa95c" fill-opacity="0.22"/>')
+            out.append(f'<ellipse cx="{fmt(x + r * 0.08)}" cy="{fmt(y + r * 0.1)}" rx="{fmt(r * 1.08)}" ry="{fmt(r * 0.82)}" '
+                       f'fill="url(#moundshade)"/>')
             out.append(f'<ellipse cx="{fmt(x)}" cy="{fmt(y)}" rx="{fmt(r)}" ry="{fmt(r * 0.74)}" fill="url(#mound)"/>')
             if h["labelled"]:
                 # little summit marker
-                out.append(f'<path d="M{fmt(x - 13)},{fmt(y + 6)} L{fmt(x)},{fmt(y - 14)} L{fmt(x + 13)},{fmt(y + 6)}Z" '
+                marks.append(f'<path d="M{fmt(x - 13)},{fmt(y + 6)} L{fmt(x)},{fmt(y - 14)} L{fmt(x + 13)},{fmt(y + 6)}Z" '
                            f'fill="#8c6a4f" stroke="{OUTLINE}" stroke-width="3" stroke-linejoin="round"/>'
                            f'<path d="M{fmt(x - 5)},{fmt(y - 6)} L{fmt(x)},{fmt(y - 14)} L{fmt(x + 5)},{fmt(y - 6)}Z" '
                            f'fill="#ffffff"/>')
-        return f'<g clip-path="url(#macclip)">{"".join(out)}</g>'
+        # shading only on the green (park/forest) areas; summit markers on top
+        return f'<g clip-path="url(#parkclip)">{"".join(out)}</g>' + "".join(marks)
+
+    def edge_fade_svg(self, fade=110):
+        g = []
+        for gid, (x1, y1, x2, y2), rect in (("fadeW", (0, 0, 1, 0), (0, 0, fade, H)),
+                                            ("fadeE", (1, 0, 0, 0), (W - fade, 0, fade, H)),
+                                            ("fadeN", (0, 0, 0, 1), (0, 0, W, fade)),
+                                            ("fadeS", (0, 1, 0, 0), (0, H - fade, W, fade))):
+            g.append(f'<linearGradient id="{gid}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
+                     f'<stop offset="0" stop-color="{SEA}" stop-opacity="1"/>'
+                     f'<stop offset="0.25" stop-color="{SEA}" stop-opacity="0.85"/>'
+                     f'<stop offset="1" stop-color="{SEA}" stop-opacity="0"/></linearGradient>')
+            g.append(f'<rect x="{rect[0]}" y="{rect[1]}" width="{rect[2]}" height="{rect[3]}" fill="url(#{gid})"/>')
+        return "".join(g)
+
+    def plazas_svg(self):
+        out = []
+        for it in self.icon_items:
+            sz, x, y = it["size"], it["x"], it["y"]
+            out.append(f'<ellipse cx="{fmt(x)}" cy="{fmt(y - sz * 0.01)}" rx="{fmt(sz * 0.42)}" ry="{fmt(sz * 0.11)}" '
+                       f'fill="#fff6e3" fill-opacity="0.75"/>')
+            out.append(f'<ellipse cx="{fmt(x)}" cy="{fmt(y)}" rx="{fmt(sz * 0.27)}" ry="{fmt(sz * 0.05)}" '
+                       f'fill="{OUTLINE}" fill-opacity="0.1"/>')
+        return "".join(out)
 
     def runway_svg(self):
         if self.runway.is_empty:
@@ -1397,26 +2037,35 @@ class Renderer:
         return "".join(out)
 
     def bridges_svg(self):
-        piers, cas, fill = [], [], []
+        """Decks with a soft shadow on the water and small round piers (not
+        sleeper-like ticks, which would clash with the LRT line)."""
+        piers, cas = [], []
         foot = self.foot.buffer(2)
         shapely.prepare(foot)
         for name, ls in self.bridges:
             for l in ls:
                 cas.append(l)
-                n = int(l.length // 30)
+                n = int(l.length // 70)
                 for i in range(1, n):
-                    p = l.interpolate(i * 30)
+                    p = l.interpolate(i * 70)
                     if shapely.contains_xy(foot, p.x, p.y):
                         continue
-                    q = l.interpolate(min(l.length, i * 30 + 2))
+                    q = l.interpolate(min(l.length, i * 70 + 2))
                     dx, dy = q.x - p.x, q.y - p.y
                     d = math.hypot(dx, dy) or 1
                     nx, ny = -dy / d, dx / d
-                    piers.append(LineString([(p.x - nx * 15, p.y - ny * 15 + 4), (p.x + nx * 15, p.y + ny * 15 + 4)]))
+                    if ny < 0:                       # always the lower (south) side
+                        nx, ny = -nx, -ny
+                    piers.append((p.x + nx * 11, p.y + ny * 11 + 3))
         rc = 'fill="none" stroke-linecap="round" stroke-linejoin="round"'
-        return (f'<path d="{line_d(piers)}" {rc} stroke="{BRIDGE_PIER}" stroke-width="5"/>'
-                f'<path d="{line_d(cas)}" {rc} stroke="{BRIDGE_EDGE}" stroke-width="17"/>'
-                f'<path d="{line_d(cas)}" {rc} stroke="#fbf8f1" stroke-width="10"/>')
+        deck = line_d(cas)
+        # the shadow is drawn early (under the land), so it only shows on the water
+        self.bridge_shadow = (f'<path d="{deck}" transform="translate(6,8)" {rc} stroke="#1f4e79" '
+                              f'stroke-opacity="0.18" stroke-width="17"/>')
+        pier_svg = "".join(f'<circle cx="{fmt(x)}" cy="{fmt(y)}" r="4"/>' for x, y in piers)
+        return (f'<g fill="{BRIDGE_PIER}" stroke="{OUTLINE}" stroke-width="1.2" stroke-opacity="0.5">{pier_svg}</g>'
+                f'<path d="{deck}" {rc} stroke="{BRIDGE_EDGE}" stroke-width="17"/>'
+                f'<path d="{deck}" {rc} stroke="#fbf8f1" stroke-width="10"/>')
 
     def compass_svg(self):
         cx, cy, cs = self.compass
@@ -1458,7 +2107,7 @@ def find_node_path():
              "(or set NODE_PATH to a node_modules that contains it)")
 
 
-def rasterize(svg_path, png_path):
+def _node(args):
     node = shutil.which("node")
     if not node:
         sys.exit("node not found - install Node.js 18+ to rasterize the SVG")
@@ -1466,9 +2115,20 @@ def rasterize(svg_path, png_path):
     np_ = find_node_path()
     if np_:
         env["NODE_PATH"] = np_
-    cmd = [node, str(HERE / "rasterize.mjs"), str(svg_path), str(png_path)]
+    cmd = [node, str(HERE / "rasterize.mjs")] + [str(a) for a in args]
     log("  " + " ".join(cmd))
     subprocess.run(cmd, check=True, env=env)
+
+
+def rasterize(svg_path, png_path):
+    _node([svg_path, png_path])
+
+
+def measure_icons(out_dir):
+    """Icon silhouettes (from resvg renders) for overlap-free layout."""
+    path = Path(out_dir) / "icon-shapes.json"
+    _node(["--icons", ICONS, path])
+    return path
 
 
 def to_webp(png_path, sea):
@@ -1513,13 +2173,17 @@ def main():
     if not places:
         log("  WARNING: no attractions found (data/places.json missing?) - map will have no landmark icons")
     labels = json.loads((DATA / "labels.json").read_text(encoding="utf-8"))
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
     r = Renderer(args)
+    try:
+        r.icons.load_shapes(measure_icons(out))
+    except (SystemExit, subprocess.CalledProcessError, OSError) as exc:
+        log(f"  (could not measure icon silhouettes: {exc}; using rough boxes)")
     log("preparing geometry ...")
     r.prepare()
     log("laying out ...")
     svg = r.svg(labels, places)
-    out = Path(args.out)
-    out.mkdir(parents=True, exist_ok=True)
     svg_path = out / "cartoon.svg"
     svg_path.write_text(svg, encoding="utf-8")
     log(f"  {svg_path} ({len(svg) / 1048576:.1f} MB) in {time.time() - t0:.1f}s; "
