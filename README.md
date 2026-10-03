@@ -18,13 +18,18 @@
 ```json
 {
   "title": "澳门一日游",
-  "stops": ["ruins-st-paul", "senado-square", "a-ma-temple", "macau-tower", "rua-do-cunha"]
+  "stops": [
+    { "name": "保利美高梅博物馆", "lat": 22.186104, "lng": 113.547588 },
+    "grand-lisboa",
+    "大三巴牌坊"
+  ]
 }
 ```
 
-- `stops`：按游览顺序列出默认站点（第一个就是第一站），可以写景点 ID，也可以直接写景点名称（如 `"大三巴牌坊"`）。数量不限。起点（外港码头）和终点（氹仔码头）是固定的，不用写。
+- `stops`：按游览顺序列出默认站点（第一个就是第一站），数量不限。每一项可以是内置景点 ID（如 `"grand-lisboa"`）、内置景点名称（如 `"大三巴牌坊"`），或任意地点 `{ "name", "lat", "lng" }`（WGS-84 坐标）。起点（外港码头）和终点（氹仔码头）是固定的，不用写。
 - `title`：页面标题。
-- 访客在网页上修改过的路线保存在自己的浏览器里；没改过的访客总是看到这里的默认路线。
+- 改完后运行 `python3 tools/build_route.py`，把非内置地点相关路段的真实路线写进 `route.json`（`legs` 字段），这样默认路线打开即显示，不用联网计算。
+- 访客在网页上修改过的路线只保存在他自己的浏览器里；没改过的访客总是看到这里的默认路线。
 
 可用的景点 ID：
 
@@ -127,5 +132,5 @@ sw.js                      离线缓存
 - 路线计算：[OSRM](https://project-osrm.org/)（routing.openstreetmap.de）。
 - 地点搜索：[Nominatim](https://nominatim.org/)。
 - 地图库：[Leaflet](https://leafletjs.com/)（BSD-2-Clause）。
-- 插画字体：站酷快乐体、站酷庆科黄油体（SIL Open Font License 1.1，见 `tools/fonts/`）。
+- 插画字体：站酷快乐体、站酷庆科黄油体（SIL Open Font License 1.1），以及只含「氹」一个字的思源黑体子集（Apache 2.0），见 `tools/fonts/`。
 - 路线仅供参考，请以现场交通情况为准。

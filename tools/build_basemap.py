@@ -18,7 +18,10 @@ Usage (from the repository root):
 
 The build prints self-checks (unclassified coastline faces, islands whose
 orientation disagrees with the land result, labels that are not in water / on
-land, overlapping labels).  Output sizes: basemap.geojson <= ~700 KB,
+land, labels running outside the app view at their min zoom, overlapping
+labels, labels under the default route's pins from data/places.json +
+data/route.json).  Water labels get the lowest min zoom at which they fit
+inside their water.  Output sizes: basemap.geojson <= ~700 KB,
 basemap-detail.geojson <= ~1.5 MB.
 
 Map data (c) OpenStreetMap contributors, ODbL 1.0.
@@ -52,6 +55,13 @@ BBOX_POLY = box(W, S, E, N)
 LAT0 = (S + N) / 2
 KX = math.cos(math.radians(LAT0))      # lon-degree -> "lat-degree" scale
 M_PER_DEG = 110_574.0                  # metres per degree of latitude
+
+# The app's map view: data/cartoon.json "bounds" (and the fallback in
+# assets/js/main.js).  Leaflet fits this box on load and keeps the view near
+# it (maxBounds = VIEW padded by 12 %), so every label must be readable inside
+# it: the build checks each label's box at its min zoom against VIEW.
+VIEW_S, VIEW_W, VIEW_N, VIEW_E = 22.105, 113.522, 22.222, 113.612
+VIEW = box(VIEW_W, VIEW_S, VIEW_E, VIEW_N)
 
 UA = "macau-tourist-map/1.0 (+https://github.com/w-jiaqi/macau)"
 OVERPASS = [
@@ -120,6 +130,17 @@ out geom;
     "rail": f"""
 [out:json][timeout:180];
 way["railway"~"^(light_rail|subway|rail)$"]({BBOX});
+out geom;
+""",
+    # taxiway bridges joining the runway island to the apron (C1, G, H) and
+    # the man_made=bridge outlines under them
+    "aerobridges": f"""
+[out:json][timeout:180];
+way["aeroway"="taxiway"]["bridge"]({BBOX})->.t;
+(
+  .t;
+  way(around.t:30)["man_made"="bridge"];
+);
 out geom;
 """,
     "points": f"""
@@ -476,6 +497,80 @@ def build_macau_area(bnd_js):
     return g
 
 
+def fix_split_slivers(land_macau, land_other, max_m2=500, max_width_m=4.0):
+    """Give land-other slivers that touch Macau land to Macau.
+
+    Where the administrative boundary runs a metre inside the coastline (e.g.
+    along the east shore of the 澳门大学 campus) the Macau / non-Macau split
+    leaves a hairline strip of "Zhuhai" land, and the map would draw the
+    dashed border and a second coast line along the shore.  Such pieces
+    (< max_m2, or thinner than max_width_m on average) are not real
+    non-Macau land.  A strip can hang off a big piece by a hairline neck
+    (only the output rounding separates it), so the strips an opening of
+    max_width_m removes count as pieces too.  The outer coastline is unchanged.
+    """
+    r = max_width_m / 2 / M_PER_DEG
+    opened = from_local(to_local(land_other).buffer(-r, join_style="mitre")
+                        .buffer(r, join_style="mitre"))
+    cand = polys(valid(land_other.difference(opened)))           # thin strips
+    for p in polys(land_other):                                  # small pieces
+        a = area_m2(p)
+        if a < max_m2 or 2 * a / max(length_m(p.exterior), 1e-9) < max_width_m:
+            cand.append(p)
+    moved = [p for p in cand if p.distance(land_macau) < 1e-7]
+    if not moved:
+        return land_macau, land_other
+    for p in moved:
+        c = p.representative_point()
+        log(f"  split sliver given to Macau: {area_m2(p):.0f} m2, "
+            f"{length_m(p.exterior) / 2:.0f} m long at {c.y:.4f},{c.x:.4f}")
+    moved = valid(unary_union(moved))
+    return (valid(unary_union([land_macau, moved])),
+            valid(land_other.difference(moved)))
+
+
+def build_taxiway_bridges(js):
+    """Taxiway bridges between the runway island and the apron (C1, G, H).
+
+    Uses the man_made=bridge outline under each aeroway=taxiway bridge (the
+    buffered taxiway when there is none), so the runway island does not float
+    unconnected in the sea.
+    """
+    taxi, outlines = [], []
+    for e in js["elements"]:
+        t = e.get("tags", {})
+        c = coords_of(e.get("geometry", []))
+        if len(c) < 2:
+            continue
+        if t.get("aeroway") == "taxiway" and t.get("bridge") not in (None, "no"):
+            taxi.append((LineString(c), t))
+        elif t.get("man_made") == "bridge" and is_closed_way(e) and len(c) >= 4:
+            outlines.append(valid(Polygon(c)))
+    out = []
+    for line, t in taxi:
+        hit = [p for p in outlines if p.intersects(line)]
+        if hit:
+            out += hit
+        else:
+            try:
+                wdt = float(str(t.get("width", "")).split()[0])
+            except (ValueError, IndexError):
+                wdt = 30.0
+            out.append(buffer_line_m(line, wdt))
+    if not out:
+        log("  WARNING: no taxiway bridges found")
+        return None
+    g = valid(unary_union(out))
+    log(f"  taxiway bridges: {len(taxi)} taxiways, {len(polys(g))} polygons, "
+        f"{area_m2(g)/1e4:.1f} ha")
+    return g
+
+
+def drop_islets(g, min_m2=5000):
+    """Land without islets (bridge-pier islands etc.), for bridge clipping."""
+    return valid(MultiPolygon([p for p in polys(g) if area_m2(p) >= min_m2]))
+
+
 # --------------------------------------------------------------------------
 # area layers
 # --------------------------------------------------------------------------
@@ -584,7 +679,8 @@ def build_areas(js_list, land_all, land_macau):
                 continue
             buckets[k].append(g)
     out = {}
-    clip = {"park": land_macau, "beach": land_all,
+    # green and beach only on Macau land: Zhuhai / Hengqin stay muted
+    clip = {"park": land_macau, "beach": land_macau,
             "airport": land_macau, "runway": land_all}
     for k, gs in buckets.items():
         if not gs:
@@ -632,8 +728,19 @@ def bridge_of(t):
     return None
 
 
-def build_roads(roads_js, sea):
-    major, mid = [], []
+def build_roads(roads_js, sea, sea_all):
+    """Major / mid roads plus bridge decks over the water.
+
+    * `sea`: water for the six named bridges (coastline only, so a pier
+      under a deck does not cut it, and islets < 5000 m2 such as the 莲花大桥
+      pier islands ignored, so the deck stays one piece);
+    * `sea_all`: the map's final water (with river mouths, without islets)
+      for every other bridge=yes major / mid road over the water (新城A区 /
+      港珠澳大桥口岸 links, 氹仔 ramps, 昌盛大桥, 海琴桥 ...), returned as ONE
+      unnamed geometry so these decks are styled as bridges too instead of
+      plain roads in the sea.
+    """
+    major, mid, other_br = [], [], []
     bridges = {d: [] for d, _ in BRIDGES}
     for e in roads_js["elements"]:
         t = e.get("tags", {})
@@ -651,6 +758,10 @@ def build_roads(roads_js, sea):
             major.append(g)
         elif hw in MID:
             mid.append(g)
+        else:
+            continue
+        if t.get("bridge") not in (None, "no"):
+            other_br.append(g)
     sea_b = sea.buffer(0.00004)
     bridge_feats = {}
     for disp, gs in bridges.items():
@@ -666,7 +777,17 @@ def build_roads(roads_js, sea):
             continue
         bridge_feats[disp] = MultiLineString(ls)
         log(f"  bridge {disp}: {len(ls)} parts, {length_m(MultiLineString(ls)):.0f} m over water")
-    return unary_union(major), unary_union(mid), bridge_feats
+    other = None
+    if other_br:
+        u = unary_union(other_br).intersection(sea_all.buffer(0.00004))
+        if bridge_feats:      # decks already drawn as a named bridge
+            u = u.difference(unary_union(list(bridge_feats.values())).buffer(0.00008))
+        ls = [l for l in lines(linemerge(lines(u)) if len(lines(u)) > 1 else u)
+              if length_m(l) > 30]
+        if ls:
+            other = MultiLineString(ls)
+            log(f"  other bridges over water: {len(ls)} parts, {length_m(other):.0f} m")
+    return unary_union(major), unary_union(mid), bridge_feats, other
 
 
 def build_rail(rail_js):
@@ -727,26 +848,36 @@ def build_detail(minor_js, area_clip):
 # --------------------------------------------------------------------------
 # labels
 # --------------------------------------------------------------------------
-# District / region labels: fixed, visually centred positions (validated below)
+# District / region labels: fixed positions, kept clear of the default
+# route's pins (data/route.json + the two ferry terminals) at z12.5-15 and
+# inside the app view (validated below)
 DISTRICTS = [  # text, lat, lng
-    ("澳门半岛", 22.2000, 113.5460),
-    ("氹仔", 22.1635, 113.5560),   # kept clear of the 官也街 stop marker
-    ("路氹城", 22.1420, 113.5655),
-    ("路环", 22.1255, 113.5660),
+    ("澳门半岛", 22.2105, 113.5504),   # north of the 东望洋 / 望德堂 stops, under 珠海
+    ("氹仔", 22.1635, 113.5560),       # kept clear of the 官也街 stop marker
+    ("路氹城", 22.1350, 113.5791),     # east of the 威尼斯人 / 伦敦人 stops
+    ("路环", 22.1142, 113.5669),
 ]
-REGIONS = [
-    ("珠海", 22.2150, 113.5060),
-    ("横琴", 22.1250, 113.5060),
+REGIONS = [  # on land-other, inside the view (珠海 just clears 澳门半岛 at z12)
+    ("珠海", 22.2182, 113.5350),
+    ("横琴", 22.1220, 113.5300),
 ]
 
 # Water labels: (text, type, min zoom, OSM name substrings, search box
-# (W, S, E, N) or None, rotate along the channel?, fallback (lat, lng))
+# (W, S, E, N) or None, rotate along the channel?, fallback (lat, lng)).
+# No names and no search box = a fixed position.  The min zoom is raised (and
+# a named label moved within its water) until the whole label fits in the
+# water, so it never spills onto the shore; spots off the bridge decks are
+# preferred.
 WATER_LABELS = [
-    ("珠江口", "sea", 12, [], (113.598, 22.172, 113.620, 22.195), False, (22.1850, 113.6080)),
+    # open sea inside the view, clear of the right edge on a phone
+    ("珠江口", "sea", 12, [], None, False, (22.1840, 113.5990)),
     ("十字门水道", "water", 13, ["十字門水道 Canal"], (113.536, 22.108, 113.553, 22.128), True,
      (22.1180, 113.5440)),
-    # south part of the bay, clear of the 外港客运码头 start marker (22.197, 113.559)
-    ("外港", "water", 13, ["外港 Porto Exterior"], (113.555, 22.185, 113.570, 22.1915), False,
+    # the bay south of the 外港客运码头 start marker (22.198, 113.559; the
+    # route-pin check keeps it clear).  At z13 no spot between the NAPE shore
+    # and the 友谊大桥 deck is wide enough, so the label crosses the deck
+    # there; from z14 it sits clear of it.
+    ("外港", "water", 13, ["外港 Porto Exterior"], (113.555, 22.185, 113.570, 22.1950), False,
      (22.1880, 113.5600)),
     ("内港", "water", 14, ["內港 Porto Interior"], (113.524, 22.192, 113.542, 22.206), False,
      (22.1980, 113.5335)),
@@ -756,14 +887,17 @@ WATER_LABELS = [
     ("九澳水库", "water", 15, ["九澳水庫"], None, False, (22.1335, 113.5760)),
 ]
 
-# natural=peak: OSM name substring -> (Simplified display name, min zoom)
+# natural=peak: OSM name substring -> (Simplified display name, min zoom
+# [, label offset (dlat, dlng) from the summit])
 PEAKS = {
-    "東望洋山": ("东望洋山", 14),
+    # the summit is under the 东望洋 (Guia Fortress) place pin: label just
+    # north of it, clear of the pin and the 东望洋新街 stop from z14
+    "東望洋山": ("东望洋山", 14, (0.0023, 0.0002)),
     "大潭山": ("大潭山", 14),
     "小潭山": ("小潭山", 14),
     "疊石塘山": ("叠石塘山", 14),
     "九澳山": ("九澳山", 14),
-    "西望洋山": ("西望洋山", 15),
+    "西望洋山": ("西望洋山", 15, (-0.0009, 0.0)),   # clear of the 主教山 pin
     "媽閣山": ("妈阁山", 15),
     "望廈山": ("望厦山", 15),
 }
@@ -826,23 +960,47 @@ def text_px(text, typ):
     return w, fs * 1.3
 
 
+def deg_per_px(z):
+    """Longitude degrees per screen pixel at zoom z (latitude: times cos(lat))."""
+    return 360 / (256 * 2 ** z)
+
+
+def px_to_deg(g, z, at):
+    """Pixel-space geometry around (0, 0) (y up) -> degrees around point `at`."""
+    d = deg_per_px(z)
+    g = shapely.transform(g, lambda c: c * [d, d * KX])
+    return shapely.affinity.translate(g, at.x, at.y)
+
+
+def label_visible(L, z):
+    """Same rule as syncLabels() in assets/js/mapview.js."""
+    return L["min"] - 0.01 <= z <= L.get("max", 99) + 0.99
+
+
+def label_poly(L, z, at=None, glyphs=False):
+    """A label's (rotated) screen box in degrees at zoom z.
+
+    Default: the CSS line box plus a small margin (overlap / view / pin
+    checks).  glyphs=True: the glyphs plus 2 px (fitting into water).
+    """
+    w, h = text_px(L["text"], L["type"])
+    if glyphs:
+        fs = LABEL_METRICS.get(L["type"], (12, 0, 0))[0]
+        r = box(-w / 2 - 2, -fs / 2 - 2, w / 2 + 2, fs / 2 + 2)
+    else:
+        r = box(-w / 2 - 3, -h / 2 - 2, w / 2 + 3, h / 2 + 2)
+    if L.get("angle"):
+        # CSS rotate() is clockwise on screen (y down) = negative here (y up)
+        r = shapely.affinity.rotate(r, -L["angle"], origin=(0, 0))
+    return px_to_deg(r, z, at if at is not None else Point(L["lng"], L["lat"]))
+
+
 def label_overlaps(labels, zmin=12, zmax=18):
     """Pairs of labels whose (rotated) boxes overlap at a zoom both show."""
     out = []
     for z in range(zmin, zmax + 1):
-        deg_px = 360 / (256 * 2 ** z)            # lon degrees per pixel
-        boxes = []
-        for L in labels:
-            if L["min"] > z or ("max" in L and L["max"] < z):
-                continue
-            w, h = text_px(L["text"], L["type"])
-            r = box(-w / 2 - 3, -h / 2 - 2, w / 2 + 3, h / 2 + 2)
-            if L.get("angle"):
-                r = shapely.affinity.rotate(r, -L["angle"], origin=(0, 0))
-            # pixel -> degrees (screen y down; lat px shrinks by cos(lat))
-            r = shapely.transform(r, lambda c: c * [deg_px, deg_px * KX])
-            r = shapely.affinity.translate(r, L["lng"], L["lat"])
-            boxes.append((L, r))
+        boxes = [(L, label_poly(L, z)) for L in labels
+                 if L["min"] <= z and L.get("max", 99) >= z]
         for i in range(len(boxes)):
             for j in range(i + 1, len(boxes)):
                 if boxes[i][1].intersects(boxes[j][1]):
@@ -852,8 +1010,103 @@ def label_overlaps(labels, zmin=12, zmax=18):
     return out
 
 
-def build_labels(points_js, areas_js, land_macau, land_other, water, sea,
-                 bridge_feats, airport):
+def fit_in_water(L, pt, area, water, zmin, zmax=18, avoid=None):
+    """Lowest zoom >= zmin at which a label fits inside the water, and where.
+
+    The label's glyph box must lie inside `water` (islets are holes): at `pt`
+    if it fits there, else (when a search `area` is given) at the nearest
+    point of `area` where it does.  At each zoom, spots whose glyph box also
+    stays 2 px clear of `avoid` (the bridge decks) are tried first; a deck
+    never raises the min zoom.  Returns (None, None) if it never fits.
+    """
+    import numpy as np
+    from shapely.prepared import prep
+    pw = prep(water)
+    for z in range(int(math.ceil(zmin)), zmax + 1):
+        base = label_poly(L, z, Point(0, 0), glyphs=True)
+        cands = [(pt.x, pt.y)]
+        if area is not None and not area.is_empty:
+            x0, y0, x1, y1 = area.bounds
+            step = max(2 * deg_per_px(z), (x1 - x0) / 200, (y1 - y0) / KX / 200)
+            gx, gy = np.meshgrid(np.arange(x0, x1, step), np.arange(y0, y1, step * KX))
+            gx, gy = gx.ravel(), gy.ravel()
+            inside = shapely.contains_xy(area, gx, gy)
+            gx, gy = gx[inside], gy[inside]
+            order = np.argsort(((gx - pt.x) * KX) ** 2 + (gy - pt.y) ** 2)
+            cands += [(float(gx[i]), float(gy[i])) for i in order]
+        pa = prep(avoid.buffer(2 * deg_per_px(z))) if avoid is not None and not avoid.is_empty else None
+        for need_clear in ((True, False) if pa is not None else (False,)):
+            for x, y in cands:
+                g = shapely.affinity.translate(base, x, y)
+                if pw.contains(g) and not (need_clear and pa.intersects(g)):
+                    return (pt if (x, y) == (pt.x, pt.y) else Point(x, y)), z
+    return None, None
+
+
+def pin_radius(kind, z):
+    """Pin radius in px (assets/css/app.css: stop 34 px, terminal 40 px,
+    both inset 4 px when zoomed out)."""
+    if kind == "term":
+        return 20 if z >= 13 else 16
+    return 17 if z >= 14 else 13
+
+
+def load_pins():
+    """Pins the labels must stay clear of: (route pins, other place pins).
+
+    Route pins: the two ferry terminals and the default stops of
+    data/route.json (place ids or names, or {name, lat, lng}).  Other place
+    pins: every other place in data/places.json (shown once the user adds it).
+    """
+    try:
+        places = json.loads((DATA / "places.json").read_text(encoding="utf-8"))
+        route = json.loads((DATA / "route.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as ex:
+        log(f"  WARNING: pins not checked ({ex})")
+        return [], []
+    byid = {p["id"]: p for p in places.get("places", [])}
+    byname = {}                 # route.json may also name a built-in place
+    for p in places.get("places", []):
+        for k in ("name", "short"):
+            if p.get(k):
+                byname.setdefault(p[k], p)
+    route_pins = [(places[k]["short"], "term", Point(places[k]["lng"], places[k]["lat"]))
+                  for k in ("start", "end") if k in places]
+    used = set()
+    for s in route.get("stops", []):
+        p = s if isinstance(s, dict) else (byid.get(s) or byname.get(s))
+        if p is None:
+            log(f"  WARNING: route stop {s!r} not in places.json")
+            continue
+        used.add(p.get("id"))
+        route_pins.append((p.get("short") or p["name"], "stop", Point(p["lng"], p["lat"])))
+    other = [(p["short"], "stop", Point(p["lng"], p["lat"]))
+             for p in byid.values() if p["id"] not in used]
+    return route_pins, other
+
+
+PIN_CHECK_ZOOMS = [12.5, 13, 13.5, 14, 14.5, 15, 15.5, 16, 17, 18]
+
+
+def label_pin_hits(labels, pins, types=None):
+    """(label, pin, lowest zoom) where a label's box runs under a pin."""
+    out = []
+    for L in labels:
+        if types and L["type"] not in types:
+            continue
+        for name, kind, p in pins:
+            for z in PIN_CHECK_ZOOMS:
+                if not label_visible(L, z):
+                    continue
+                pin = px_to_deg(Point(0, 0).buffer(pin_radius(kind, z), 16), z, p)
+                if label_poly(L, z).intersects(pin):
+                    out.append((L["text"], name, z))
+                    break
+    return out
+
+
+def build_labels(points_js, areas_js, land_macau, land_other, water, sea, bridge_feats,
+                 decks=None):
     labels = []
     problems = []
     water_any = valid(unary_union([g for g in (sea, water) if g is not None]))
@@ -894,7 +1147,8 @@ def build_labels(points_js, areas_js, land_macau, land_other, water, sea,
                     if g is not None and not g.is_empty:
                         named.setdefault(k, []).append(g)
     for text, typ, mn, keys, sbox, rotate, fb in WATER_LABELS:
-        region = None
+        region = piece = None
+        fixed = not keys and not sbox
         geoms = [g for k in keys for g in named.get(k, [])]
         if geoms:
             region = unary_union(geoms).intersection(water_any)
@@ -902,8 +1156,8 @@ def build_labels(points_js, areas_js, land_macau, land_other, water, sea,
             region = water_any
         if region is not None and sbox:
             region = region.intersection(box(*sbox))
-        piece = max(polys(region), key=lambda g: g.area, default=None) \
-            if region is not None else None
+        if region is not None:
+            piece = max(polys(region), key=lambda g: g.area, default=None)
         if piece is not None:
             # ignore islets so the label sits in the visual middle of a lake
             pt = polylabel_local(Polygon(piece.exterior))
@@ -911,15 +1165,29 @@ def build_labels(points_js, areas_js, land_macau, land_other, water, sea,
                 pt = polylabel_local(piece)
         else:
             pt = ll(*fb)
-            problems.append(f"water {text}: OSM geometry not found, fallback used")
+            if not fixed:
+                problems.append(f"water {text}: OSM geometry not found, fallback used")
         if not water_any.contains(pt):
             problems.append(f"water {text} not in water")
         ang = channel_angle(region, pt) if (rotate and region is not None) else None
-        add(text, typ, pt, mn, None, ang)
+        # the whole label (at its min zoom) must fit in the water, preferably
+        # off the bridge decks
+        L = {"text": text, "type": typ, "angle": ang}
+        fit_pt, fit_z = fit_in_water(L, pt, piece, water_any, mn, avoid=decks)
+        if fit_pt is None:
+            problems.append(f"water {text} does not fit in its water at any zoom")
+            fit_pt, fit_z = pt, mn
+        if fit_z > mn:
+            log(f"  water label {text}: min zoom {mn} -> {fit_z} (does not fit in the water below)")
+        if not fit_pt.equals(pt):
+            d = length_m(LineString([pt, fit_pt]))
+            log(f"  water label {text}: moved {d:.0f} m to fit in the water at z{fit_z}")
+        add(text, typ, fit_pt, fit_z, None, ang)
 
-    # bridges: midpoint + direction of the part over water ---------------
+    # bridges: midpoint + direction of the part over water inside the view --
     for disp, ml in bridge_feats.items():
-        longest = max(lines(ml), key=length_m)
+        parts = [l for l in lines(ml.intersection(VIEW)) if length_m(l) > 60] or lines(ml)
+        longest = max(parts, key=length_m)
         mid = longest.interpolate(0.5, normalized=True)
         (x1, y1), (x2, y2) = longest.coords[0], longest.coords[-1]
         ang = norm_angle(-math.degrees(math.atan2(y2 - y1, (x2 - x1) * KX)))
@@ -941,8 +1209,9 @@ def build_labels(points_js, areas_js, land_macau, land_other, water, sea,
             text = f"{text} {round(float(str(t['ele']).lower().rstrip('m').strip()))}m"
         except (KeyError, ValueError):
             pass
-        add(text, "hill", ll(e["lat"], e["lon"]), hit[1])
-    for k, (disp, _) in PEAKS.items():
+        dlat, dlng = hit[2] if len(hit) > 2 else (0.0, 0.0)
+        add(text, "hill", ll(e["lat"] + dlat, e["lon"] + dlng), hit[1])
+    for k, (disp, *_) in PEAKS.items():
         if disp not in seen:
             problems.append(f"peak {disp} not found in OSM")
 
@@ -964,10 +1233,22 @@ def build_labels(points_js, areas_js, land_macau, land_other, water, sea,
             problems.append(f"landmark {text} not on land")
         add(text, "landmark", pt, mn)
 
+    # checks ---------------------------------------------------------------
+    for L in labels:      # readable inside the app view at its min zoom
+        if not VIEW.contains(label_poly(L, L["min"])):
+            problems.append(f"label {L['text']} runs outside the view at z{L['min']}")
     for z, (a, b) in label_overlaps(labels):
         problems.append(f"labels overlap at z{z}: {a} / {b}")
+    route_pins, other_pins = load_pins()
+    for text, pin, z in label_pin_hits(labels, route_pins):
+        problems.append(f"label {text} under the route pin {pin} at z{z}")
+    # other places become pins once added: hills / landmarks must not hide
+    # under them (districts, water and bridges are allowed to)
+    for text, pin, z in label_pin_hits(labels, other_pins, types={"hill", "landmark"}):
+        log(f"  label note: {text} under the {pin} place pin at z{z} (when that place is a stop)")
     for p in problems:
         log("  LABEL CHECK: " + p)
+    log(f"  labels: {len(labels)}, {len(problems)} check problems")
     return labels
 
 
@@ -1012,6 +1293,7 @@ def main():
     macau_s = simplify(macau, TOL_LAND)
     land_macau = valid(land_all_s.intersection(macau_s))
     land_other = valid(land_all_s.difference(macau_s))
+    land_macau, land_other = fix_split_slivers(land_macau, land_other)
     sea = valid(BBOX_POLY.difference(land_all))
 
     log("areas")
@@ -1020,9 +1302,10 @@ def main():
 
     log("roads")
     # bridges: the parts over open water (coastline-only sea, so a pier under
-    # a deck does not cut the bridge)
-    major, mid, bridge_feats = build_roads(js["roads"],
-                                           valid(BBOX_POLY.difference(land_coast)))
+    # a deck does not cut the bridge; islets ignored)
+    major, mid, bridge_feats, other_bridges = build_roads(
+        js["roads"], valid(BBOX_POLY.difference(drop_islets(land_coast))),
+        valid(BBOX_POLY.difference(drop_islets(land_all))))
     rail = build_rail(js["rail"])
     border = valid(land_macau.buffer(1e-6).intersection(land_other.buffer(1e-6)))
     border = linemerge(lines(shapely.intersection(macau_s.boundary, border)))
@@ -1041,14 +1324,19 @@ def main():
 
     addf("land-other", land_other, "poly", 0)
     addf("land", land_macau, "poly", 0)
-    # simplified green/beach/airport edges are re-clipped to the land outline
-    for k, clip_to in (("park", land_macau), ("beach", land_all_s), ("airport", land_macau)):
+    # simplified green/beach/airport edges are re-clipped to the Macau land
+    # outline (green and beaches on Zhuhai / Hengqin are not drawn)
+    for k, clip_to in (("park", land_macau), ("beach", land_macau), ("airport", land_macau)):
         g = finish_polygonal(areas.get(k), TOL_AREA)
         if g is not None:
             g = as_multipolygon(valid(g.intersection(clip_to)))
             g = as_multipolygon(MultiPolygon([p for p in polys(g) if area_m2(p) > 50])) \
                 if g is not None else None
         areas[k] = g
+    # the taxiway bridges (over the water) join the runway island to the apron
+    taxi = build_taxiway_bridges(js["aerobridges"])
+    if taxi is not None and areas.get("airport") is not None:
+        areas["airport"] = valid(unary_union([areas["airport"], simplify(taxi, TOL_LAND)]))
     addf("park", areas.get("park"), "poly", 0)
     addf("beach", areas.get("beach"), "poly", 0)
     addf("airport", areas.get("airport"), "poly", 0)
@@ -1061,6 +1349,7 @@ def main():
     addf("rail", rail[1], "line", TOL_ROAD, tunnel=True)
     for disp, ml in bridge_feats.items():
         addf("bridge", ml, "line", TOL_ROAD, name=disp)
+    addf("bridge", other_bridges, "line", TOL_ROAD)        # unnamed, no label
 
     fc = {"type": "FeatureCollection",
           "attribution": "© OpenStreetMap contributors (ODbL)",
@@ -1080,8 +1369,10 @@ def main():
                 "bbox": [W, S, E, N], "features": dfe})
 
     log("labels")
+    decks = unary_union(list(bridge_feats.values()) +
+                        ([other_bridges] if other_bridges is not None else []))
     labels = build_labels(js["points"], js["areas"], land_macau, land_other,
-                          areas.get("water"), sea, bridge_feats, areas.get("airport"))
+                          areas.get("water"), sea, bridge_feats, decks)
     write_json(DATA / "labels.json", labels)
 
 
