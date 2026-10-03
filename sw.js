@@ -1,6 +1,6 @@
 // Offline support: network-first for this site's own files, falling back to the cache
 // (so the map still opens on spotty roaming data). Map tiles from other hosts are not cached.
-const VERSION = 'macau-route-v2';
+const VERSION = 'macau-route-v3';
 const SHELL = [
   './',
   'index.html',
@@ -51,7 +51,10 @@ self.addEventListener('fetch', (event) => {
 
 async function networkFirst(req) {
   const cache = await caches.open(VERSION);
-  const network = fetch(req).then((res) => {
+  // Always revalidate with the server (cheap 304s via ETag) so a new deploy shows up on the next visit
+  // instead of waiting out GitHub Pages' 10-minute browser cache.
+  // (A navigation Request can't be re-initialised, so fetch its URL instead.)
+  const network = fetch(req.mode === 'navigate' ? req.url : req, { cache: 'no-cache' }).then((res) => {
     if (res && res.ok && res.type === 'basic') cache.put(req, res.clone());
     return res;
   });

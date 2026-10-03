@@ -459,6 +459,11 @@ a { color: var(--accent); }
 .mode-cartoon { background: var(--cartoon-sea, #6cc5e0) !important; }
 .leaflet-cartoon-pane { transition: opacity 0.4s ease; }
 .leaflet-cartoon-pane img { image-rendering: auto; }
+/* zoomAnimation is off, so Leaflet doesn't add .leaflet-zoom-animated (which sets this) — but the picture,
+   the route SVG and the real-map canvases are still scaled with transforms during a pinch. */
+.leaflet-cartoon-pane img,
+.leaflet-pane > svg,
+.leaflet-pane > canvas { transform-origin: 0 0; }
 .mode-real .leaflet-cartoon-pane { opacity: 0; }
 .mode-cartoon .leaflet-bm-labels-pane { visibility: hidden; }
 

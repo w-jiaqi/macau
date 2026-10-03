@@ -30,6 +30,33 @@ const WIDTH = {
 const CASING = [[12, 0.9], [14, 1.4], [16, 2], [18, 2.6]];
 const MAX_ZOOM = { cartoon: 17, real: 18 };
 
+// Leaflet's ImageOverlay resizes the <img> (CSS width/height) after every zoom. For a 3000×4211 picture
+// the browser then needs a frame or two to re-raster it before the next zoom animation can start, so
+// during a quick pinch the picture lagged behind the pins and the route (they drifted apart by tens of
+// pixels). Keep the element at one fixed size and express all scaling as a transform instead — the same
+// way Leaflet animates tiles — so every layer starts each zoom animation in the same frame.
+const BASE_WIDTH = 1000;
+const PictureOverlay = L.ImageOverlay.extend({
+  _reset() {
+    const img = this._image;
+    if (!img || !this._map) return;
+    const tl = this._map.latLngToLayerPoint(this._bounds.getNorthWest());
+    const br = this._map.latLngToLayerPoint(this._bounds.getSouthEast());
+    if (!this._sized) {
+      // Web Mercator keeps the picture's aspect ratio constant at every zoom.
+      img.style.width = `${BASE_WIDTH}px`;
+      img.style.height = `${(BASE_WIDTH * (br.y - tl.y)) / (br.x - tl.x)}px`;
+      this._sized = true;
+    }
+    this._scale = (br.x - tl.x) / BASE_WIDTH;
+    L.DomUtil.setTransform(img, tl, this._scale);
+  },
+  _animateZoom(e) {
+    const offset = this._map._latLngBoundsToNewLayerBounds(this._bounds, e.zoom, e.center).min;
+    L.DomUtil.setTransform(this._image, offset, this._scale * this._map.getZoomScale(e.zoom));
+  },
+});
+
 export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
   const BOUNDS = L.latLngBounds(bounds);
   const map = L.map(el, {
@@ -37,7 +64,11 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
     attributionControl: false,
     minZoom: 11,
     maxZoom: MAX_ZOOM.cartoon,
-    zoomSnap: 0.25,
+    // No CSS zoom transitions: the browser starts the big picture's transition a frame or two after the
+    // pins' and the route's, so they visibly drift apart while zooming. Pinch zoom is live anyway, and
+    // programmatic moves use flyTo, which positions every layer in the same frame.
+    zoomAnimation: false,
+    zoomSnap: 0,
     zoomDelta: 0.5,
     wheelPxPerZoomLevel: 110,
     maxBounds: BOUNDS.pad(0.12),
@@ -86,13 +117,13 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
     const b = L.latLngBounds(cfg.bounds);
     if (cfg.sea) el.style.setProperty('--cartoon-sea', cfg.sea);
     const opts = { pane: 'cartoon', interactive: false, className: 'cartoon-img', alt: '澳门插画地图' };
-    const preview = L.imageOverlay(cfg.preview || cfg.image, b, opts).addTo(map);
+    const preview = new PictureOverlay(cfg.preview || cfg.image, b, opts).addTo(map);
     if (cfg.image && cfg.image !== cfg.preview) {
       // Swap in the full-resolution picture once it has downloaded.
       const img = new Image();
       img.decoding = 'async';
       img.onload = () => {
-        const full = L.imageOverlay(cfg.image, b, opts).addTo(map);
+        const full = new PictureOverlay(cfg.image, b, opts).addTo(map);
         full.once('load', () => setTimeout(() => preview.remove(), 400));
       };
       img.src = cfg.image;
@@ -367,13 +398,9 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
     const b = L.latLngBounds(latlngs);
     if (!b.isValid()) return;
     const pad = getPadding();
-    map.fitBounds(b, {
-      paddingTopLeft: [pad.left, pad.top],
-      paddingBottomRight: [pad.right, pad.bottom],
-      maxZoom,
-      animate: !reduceMotion.matches,
-      duration: 0.6,
-    });
+    const opts = { paddingTopLeft: [pad.left, pad.top], paddingBottomRight: [pad.right, pad.bottom], maxZoom };
+    if (reduceMotion.matches) map.fitBounds(b, opts);
+    else map.flyToBounds(b, { ...opts, duration: 0.6 });
   }
 
   function fitRoute() {
@@ -414,6 +441,21 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
     }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 });
   }
 
+  function zoomBy(delta) {
+    const z = Math.min(map.getMaxZoom(), Math.max(map.getMinZoom(), map.getZoom() + delta));
+    if (reduceMotion.matches) map.setZoom(z);
+    else map.flyTo(map.getCenter(), z, { duration: 0.3 });
+  }
+
+  // Double-click / double-tap zoom, animated the same frame-synchronous way.
+  map.doubleClickZoom.disable();
+  map.on('dblclick', (e) => {
+    const z = Math.min(map.getMaxZoom(), map.getZoom() + (e.originalEvent.shiftKey ? -1 : 1));
+    const p = map.project(e.latlng, z).subtract(map.latLngToContainerPoint(e.latlng).subtract(map.getSize().divideBy(2)));
+    if (reduceMotion.matches) map.setView(map.unproject(p, z), z);
+    else map.flyTo(map.unproject(p, z), z, { duration: 0.3 });
+  });
+
   // Lowest zoom: the whole picture fits on screen (sea colour fills any margin around it).
   function updateMinZoom() {
     const prev = map.options.minZoom;
@@ -438,7 +480,7 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
     flyTo,
     locate,
     invalidate: () => { map.invalidateSize({ pan: false }); updateMinZoom(); placeTags(); },
-    zoomIn: () => map.zoomIn(),
-    zoomOut: () => map.zoomOut(),
+    zoomIn: () => zoomBy(0.75),
+    zoomOut: () => zoomBy(-0.75),
   };
 }
