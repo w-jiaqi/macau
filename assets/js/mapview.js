@@ -81,9 +81,7 @@ export function createMapView(el, { bounds, getPadding, onPinClick, toast }) {
     tapTolerance: 18,
   }).fitBounds(BOUNDS);
 
-  L.control.attribution({ position: 'bottomright', prefix: false })
-    .addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>')
-    .addTo(map);
+  // OpenStreetMap credit lives in the panel footer (index.html) rather than on the map.
 
   const pane = (name, z) => { const p = map.createPane(name); p.style.zIndex = String(z); return p; };
   pane('bm-base', 201);
