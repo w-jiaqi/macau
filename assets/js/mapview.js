@@ -39,11 +39,14 @@ const BASE_WIDTH = 1000;
 const PictureOverlay = L.ImageOverlay.extend({
   _reset() {
     const img = this._image;
-    if (!img || !this._map) return;
-    const tl = this._map.latLngToLayerPoint(this._bounds.getNorthWest());
-    const br = this._map.latLngToLayerPoint(this._bounds.getSouthEast());
+    const map = this._map;
+    if (!img || !map) return;
+    // Unrounded projection (latLngToLayerPoint rounds to whole pixels, which skews the aspect ratio).
+    const origin = map.getPixelOrigin();
+    const tl = map.project(this._bounds.getNorthWest()).subtract(origin);
+    const br = map.project(this._bounds.getSouthEast()).subtract(origin);
     if (!this._sized) {
-      // Web Mercator keeps the picture's aspect ratio constant at every zoom.
+      // Web Mercator keeps the picture's aspect ratio the same at every zoom.
       img.style.width = `${BASE_WIDTH}px`;
       img.style.height = `${(BASE_WIDTH * (br.y - tl.y)) / (br.x - tl.x)}px`;
       this._sized = true;
