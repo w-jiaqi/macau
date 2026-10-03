@@ -405,7 +405,6 @@ a { color: var(--accent); }
 .z-lt-13 .route-arrow { transform: rotate(var(--a)) scale(0.8); }
 
 /* ---------- map: pins ---------- */
-.pin-wrap { position: relative; }
 .pin {
   position: absolute; inset: 0;
   display: grid; place-items: center;
@@ -463,7 +462,6 @@ a { color: var(--accent); }
 .mode-real .leaflet-cartoon-pane { opacity: 0; }
 .mode-cartoon .leaflet-bm-labels-pane { visibility: hidden; }
 
-.you-wrap { position: relative; }
 .you-dot { position: absolute; inset: 2px; border-radius: 50%; background: #2f80ed; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(47, 128, 237, 0.2), 0 2px 6px rgba(0, 0, 0, 0.3); }
 .you-acc { fill: #2f80ed; fill-opacity: 0.1; stroke: #2f80ed; stroke-opacity: 0.35; stroke-width: 1px; }
 
